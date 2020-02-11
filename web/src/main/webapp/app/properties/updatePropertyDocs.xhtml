@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+@created May 3, 2016
+-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="viewPropertyDetails.xhtml?propId=#{updateManageBean.biodataId}" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Update Property Pictures</h2>
+        <h:form id="updPpPic" enctype="multipart/form-data">
+            <h:messages globalOnly="true" layout="block" infoClass="success" errorClass="error-message" />
+            <div id="msg_div" style="display: none;"></div>
+            <p:fieldset legend="Pictures" style="margin-bottom:15px; width: 75%;">
+                <ui:repeat var="doc" value="#{updateManageBean.propertyDocs}">
+                    <div  style="float: left;" class="image">
+                        <f:param name="fileId" value="#{doc.fileUploadId.id}" />
+                        <p:graphicImage value="#{uploadedFilesBean.image}" width="200">
+                            <f:param name="fileId" value="#{doc.fileUploadId.id}" />
+                        </p:graphicImage>
+                        <p:outputPanel rendered="#{request.isUserInRole('GEO-CODING OFFICER') or request.isUserInRole('INTERNAL CONTROL') or request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                            <a href="#" id="#{doc.fileUploadId.id}">Delete</a>
+                        </p:outputPanel>
+                    </div>
+                </ui:repeat>
+            </p:fieldset>
+            <p:fieldset legend="Additional Files" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text selected">
+                    <h:outputLabel for="fvpic" value="File 1:" />
+                    <p:fileUpload value="#{updateManageBean.fviewPic}" id="fvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_fvpic" for="fvpic" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text selected">
+                    <h:outputLabel for="svpic" value="File 2:" />
+                    <p:fileUpload value="#{updateManageBean.sviewPic}" id="svpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_svpic_" for="svpic" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text selected">
+                    <h:outputLabel for="rvpic" value="File 3:" />
+                    <p:fileUpload value="#{updateManageBean.rviewPic}" id="rvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_rvpic" for="rvpic" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $(document).ready(function () {
+                $('.image a').each(function () {
+                    $(this).click(function (evt) {
+                        console.log('id is: ' + $(this).attr('id'));
+                        var parent_div = $(this).parent().parent();
+                        $.ajax({
+                            type: "GET",
+                            //url: "#{request.contextPath}/rest/propertyService/deletePropertyFile/" + $(this).attr('id'),
+                            url: "#{request.contextPath}/ajaxSupports?fileid=" + $(this).attr('id') + "&form_action=deleteFile",
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (data) {
+                                console.log(data);
+                                if (data["successMessage"] === 'Delete Success!') {
+
+                                    $('#msg_div').html('Picture has been deleted successfully');
+                                    $('#msg_div').addClass('success');
+                                    $('#msg_div').fadeIn(100);
+                                    $('#msg_div').removeClass('error-message');
+                                    parent_div.css('display', 'none');
+                                } else {
+                                    $('#msg_div').removeClass('success');
+                                    $('#msg_div').addClass('error-mmessage');
+                                    $('#msg_div').html('Could not delete picture now, please try again later!');
+                                    $('#msg_div').fadeIn(100);
+                                }
+                            },
+                            failure: function (errMsg) {
+                                console.log(errMsg);
+                            }
+                        });
+                        evt.preventDefault();
+                    });
+                });
+            });
+
+            $('#prnt').click(function () {
+                alert('Sending to Print');
+                window.print();
+                return false;
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

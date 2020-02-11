@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : createBillsInformation
+    Created on : Mar 3, 2016, 7:49:10 PM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <style>
+            /** <![CDATA[ */
+            #mbillsForm {
+
+            }
+            #mbillsForm input {
+                width: 200px;
+            }
+
+            h1 {
+                color: maroon;
+                margin-left: 40px;
+            } 
+            /** ]]> */
+        </style>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/index.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Create New Bills</h2>
+        <h:form id="mbillsForm">
+            <div class="input select" style="margin-right: 50px;">
+                <h:outputLabel for="chrmen" value="Show Only:" />
+                <h:selectOneMenu id="chrmen" value="#{dataEntryBean.selected_lcda}" converter="#{localCouncelDevConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                    <f:ajax listener="#{dataEntryBean.changedLcda}" render="lcda_ward" />
+                </h:selectOneMenu>
+            </div>
+            <div class="input select" style="margin-right: 50px;" id="warddiv">
+                <h:outputLabel for="lcda_ward" value="Wards:" />
+                <h:selectOneMenu id="lcda_ward" value="#{dataEntryBean.selected_ward}" converter="#{lcdaWardsConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    <f:ajax listener="#{dataEntryBean.changedWardStreets()}" render="ward_street" />
+                </h:selectOneMenu>
+                <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+            </div>
+            <div class="input select" style="margin-right: 50px;" id="warddiv">
+                <h:outputLabel for="ward_street" value="Streets: " />
+                <h:selectOneMenu id="ward_street" value="#{dataEntryBean.selectedStreet}" converter="#{wardStreetConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.wardStreets}" var="ward1_" itemLabel="#{ward1_.streetName}" itemValue="#{ward1_}" />
+                </h:selectOneMenu>
+                <h:message id="m_ward_street" for="ward_street" errorClass="error-message" infoClass="success-message" />
+            </div>
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <p:fieldset legend="Property Bill Information" style="margin-bottom:15px; width: 100%;">
+                <h:dataTable styleClass="result-table" value="#{dataEntryBean.tempProperties}" var="tempP" headerClass="result-header" rowClasses="result-even-row,result-odd-row">
+                    <h:column>
+                        <f:facet name="header">Property ID</f:facet> 
+                        <h:inputText value="#{tempP.propertyId}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Company Name</f:facet> 
+                        <h:inputText value="#{tempP.name}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Owner Title</f:facet> 
+                        <h:selectOneMenu id="lcdaard" value="#{tempP.salutation}">
+                            <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                            <f:selectItems value="#{ledarAppBean.personTitle}" var="ward_" itemLabel="#{ward_.titleName}" itemValue="#{ward_.titleName}" />
+                        </h:selectOneMenu>
+                        <h:message id="m_lcdaard" for="lcdaard" errorClass="error-message" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Owner First Name</f:facet> 
+                        <h:inputText value="#{tempP.propertyOwnerFname}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Owner Last Name</f:facet> 
+                        <h:inputText value="#{tempP.propertyOwnerLname}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Owner Middle Name</f:facet> 
+                        <h:inputText value="#{tempP.propertyOwnerMiddleName}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">House Number</f:facet> 
+                        <h:inputText value="#{tempP.propertyNumber}" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Classification</f:facet> 
+                        <h:selectOneMenu id="gender" value="#{tempP.propertyClassification}" required="true"> 
+                            <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                            <f:selectItems value="#{ledarAppBean.classifications}" />
+                        </h:selectOneMenu>
+                    </h:column>
+                </h:dataTable>
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton id="sv_btn" value="Save" action="#{dataEntryBean.saveMultipleBillInformation}">
+                </h:commandButton>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $('#mbillsForm\\:username').blur(function () {
+                //var longDateFormat = 'MMM D, yyyy HH:mm:ss';
+                $('#res_div').html('Loading...');
+                var sel_val = $(this).val();
+                $.ajax({
+                    type: "GET",
+                    url: "#{request.contextPath}/rest/restSearch/searchPropertyId/" + sel_val + "/false",
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length > 0) {
+                            var data_set = '';
+                            $('#res_div').html('Bill with PIN: '+data[0]['propertyId'] + ' already exist');
+                            $('#res_div').addClass('error-message');
+                            $('#res_div').fadeIn(100);
+                            $('input[type="submit"]').prop('disabled', true);
+                        } else {
+                            $('#res_div').removeClass('error-message');
+                            $('#res_div').html('Pin doesn\'t exist before');
+                            $('input[type="submit"]').prop('disabled', false);
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    }
+                });
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

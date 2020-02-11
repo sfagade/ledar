@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+@date May 4, 2017
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{referenceBean.initNewCommercialType}" />
+        </f:metadata>
+        <h:form id="cmtyForm">
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                    <li><h:link value="Reference Data Home" outcome="/app/appAdmin/referenceDataList.xhtml" title="Click to go back"/></li>
+                    <li><h:link value="All Commercial Types" outcome="/app/appAdmin/listAllCommercialTypes.xhtml" title="Click here to view all Commercial Types"/></li>
+                </ul>
+            </div>
+            <h2>New Commercial Type</h2>
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <div style="margin-right: 50px;" class="input text required">
+                <h:outputLabel for="estnm" value="Type Name:" />
+                <h:inputText value="#{referenceBean.commercialType.commercialTypeName}" id="estnm" required="true" />
+                <h:message id="estnm_" for="estnm" errorClass="error-message" />
+            </div>
+            <div style="margin-right: 50px;" class="input text">
+                <h:outputLabel for="dscr" value="Description:" />
+                <h:inputTextarea value="#{referenceBean.commercialType.description}" id="dscr" />
+                <h:message id="dscr_" for="dscr" errorClass="error-message" />
+            </div>
+            <div style="margin-right: 50px;" class="input text">
+                <h:outputLabel for="ints" value="INITS Mapping:" />
+                <h:inputText value="#{referenceBean.commercialType.initsMapping}" id="ints" />
+                <h:message id="ints_" for="ints" errorClass="error-message" />
+            </div>
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{referenceBean.saveNewCommercialType}">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

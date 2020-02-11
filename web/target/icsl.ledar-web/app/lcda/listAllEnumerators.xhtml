@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <h:form>
+            <h2>All Enumerators</h2>
+            <p:dataTable var="enWard" value="#{registeredUser.enumWards}" rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="Name" sortBy="#{enWard.logindetailId.person.fullName}">
+                    <h:outputText value="#{enWard.logindetailId.person.fullName}" />
+                </p:column>
+                <p:column headerText="Ward Name" sortBy="#{enWard.lcdaWardId.wardName}">
+                    <h:outputText value="#{enWard.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="Assigned Role" sortBy="#{enWard.logindetailId.userRolesList[0].authenticationRoleId.roleName}">
+                    <h:outputText value="#{enWard.logindetailId.userRolesList[0].authenticationRoleId.roleName}" />
+                </p:column>
+                <p:column headerText="Email Address" sortBy="#{enWard.logindetailId.person.contactInformationsList[0].officeEmailAddress}">
+                    <h:outputText value="#{enWard.logindetailId.person.contactInformationsList[0].officeEmailAddress}" />
+                </p:column>
+                <p:column headerText="Created On" sortBy="#{enWard.logindetailId.created}">
+                    <h:outputText value="#{enWard.logindetailId.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Last Login" sortBy="#{enWard.logindetailId.lastlogindate}">
+                    <h:outputText value="#{enWard.logindetailId.lastlogindate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Active">
+                    <h:selectBooleanCheckbox value="#{enWard.logindetailId.active}" disabled="true" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

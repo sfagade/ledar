@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : listAllProperties
+    Created on : Feb 5, 2016, 10:46:50 AM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{lcdaWardsDataBean.initAllProperties}" />
+        </f:metadata>
+        <h:form id="propsform">
+            <h2>All Listed Properties</h2>
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                </ul>
+            </div>
+            <p:panel id="toggleable" header="Search For Property" toggleable="true" collapsed="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <h:outputLabel for="propId" value="Property ID:" style="float: none; display: inline;" />
+                <h:inputText id="propId" value="#{lcdaWardsDataBean.searchPropId}" />
+                <br />
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="chrmen" value="LCDA:" />
+                    <h:selectOneMenu id="chrmen" value="#{lcdaWardsDataBean.selected_lcda}" converter="#{localCouncelDevConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{loginBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                        <f:ajax listener="#{lcdaWardsDataBean.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="lcda_ward" value="District:" />
+                    <h:selectOneMenu id="lcda_ward" value="#{lcdaWardsDataBean.selectedWard}" converter="#{lcdaWardsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{loginBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="ward_street_" value="Streets: " />
+                    <p:autoComplete id="ward_street_" dropdown="true" value="#{lcdaWardsDataBean.wardStreet}" var="str_" converter="#{wardStreetConverterBean}" 
+                                    itemLabel="#{str_.streetName} - #{str_.estateName} - #{str_.lcdaWardId.wardName} - #{str_.lcdaWardId.localCouncilDevAreaId.lcdaName}" itemValue="#{str_}" 
+                                    completeMethod="#{lcdaWardsDataBean.runStreetAutoComplete}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="estate_" value="Estate: " />
+                    <p:autoComplete id="estate_" dropdown="true" value="#{lcdaWardsDataBean.streetEstate}" var="esta_" converter="#{wardStreetConverterBean}" 
+                                    itemLabel="#{esta_.estateName} - #{esta_.lcdaWardId.wardName} - #{esta_.lcdaWardId.localCouncilDevAreaId.lcdaName}" itemValue="#{esta_}" 
+                                    completeMethod="#{lcdaWardsDataBean.runEstateNameAutoComplete}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="slcv" value="Status:" />
+                    <h:selectOneMenu id="slcv" value="#{lcdaWardsDataBean.selectedStatus}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{lcdaWardsDataBean.valuationStatus}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="offc" value="Field Officers:" />
+                    <h:selectOneMenu id="offc" value="#{lcdaWardsDataBean.selectedUser}" converter="#{loginUserConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{lcdaWardsDataBean.allFieldOfficers}" var="auth_role" itemLabel="#{auth_role.person.fullName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="rngdiv">
+                    <h:outputLabel for="dtrn" value="Enumeration Day:" />
+                    <h:selectOneMenu id="dtrn" value="#{lcdaWardsDataBean.selectedDay}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.dateSeacrhValues}"/>
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px; display: none;" id="dtediv">
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="dob_" value="Start Date: " />
+                        <p:calendar id="dob_" value="#{lcdaWardsDataBean.starSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="endd" value="End Date: " />
+                        <p:calendar id="endd" value="#{lcdaWardsDataBean.endSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                </div>
+                <div class="submit">
+                    <h:commandButton id="saveBtn" value="Search" class="submit"  action="#{lcdaWardsDataBean.filterPropertyResult}" />
+                </div>
+                <br />
+                <h:commandLink value="Reset Query" action="#{lcdaWardsDataBean.resetAllPropertiesList}" title="Click here to return this page to it's default state"/>
+            </p:panel>
+            <div id="cound_div" style="float: left;">Total Records: <h:outputText value="#{lcdaWardsDataBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <div style="text-align: right;"><a href="#">Export to Excel</a></div>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <ui:fragment rendered="#{not lcdaWardsDataBean.showSeacrhResult}">
+                <p:dataTable var="lcda" value="#{lcdaWardsDataBean.lazyProperties}" rows="100" paginator="true" selectionMode="multiple" rowKey="#{lcda.id}" rowIndexVar="rowIndex"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {JumpToPageDropdown} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                             selection="#{lcdaWardsDataBean.selectProperties}" rowsPerPageTemplate="100,200,400" lazy="true">
+                    <p:column headerText="#">
+                        #{rowIndex+1}
+                    </p:column>
+                    <p:column headerText="Property ID" sortBy="#{lcda.propertyId}">
+                        <h:link value="#{lcda.propertyId}" outcome="viewPropertyDetails.xhtml?propId=#{lcda.id}" title="Click to view details" />
+                    </p:column>
+                    <p:column headerText="Address">
+                        <h:outputText value="#{lcda.propertyNumber}, #{lcda.wardStreetId.streetName} " rendered="#{lcda.wardStreetId != null}" />
+                        <h:outputText value="#{lcda.propertyNumber}, #{lcda.irregularAddress}" rendered="#{lcda.wardStreetId == null}" />
+                    </p:column>
+                    <p:column headerText="Irregular" sortBy="#{lcda.isIrregularAddress}">
+                        <h:outputText value="Yes" rendered="#{lcda.isIrregularAddress}" />
+                        <h:outputText value="No" rendered="#{not lcda.isIrregularAddress}" />
+                    </p:column>
+                    <p:column headerText="District/ LCDA" sortBy="#{lcda.wardStreetId.lcdaWardId.wardName}">
+                        <h:outputText value="#{lcda.wardStreetId.lcdaWardId.wardName}" /> / <h:outputText value="#{lcda.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}" />
+                    </p:column>
+                    <p:column headerText="PC Rating">
+                        <h:outputText value="#{lcda.propertyQualities.qualityName} #{lcda.propertyQualities.percentageValue}" />
+                    </p:column>
+                    <p:column headerText="Captured On" sortBy="#{lcda.dateCaptured}">
+                        <h:outputText value="#{lcda.dateCaptured}">
+                            <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Captured By" sortBy="#{lcda.capturedById.person.fullName}">
+                        <h:outputText value="#{lcda.capturedById.person.fullName}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Entered On" sortBy="#{lcda.created}">
+                        <h:outputText value="#{lcda.created}">
+                            <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Pushed" sortBy="#{lcda.isInitsSynced}">
+                        <h:outputText value="Yes"  rendered="#{lcda.isInitsSynced}" />
+                        <h:outputText value="No"  rendered="#{not lcda.isInitsSynced}" />
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{lcda.propertyValuationStatus}">
+                        <h:outputText value="#{lcda.propertyValuationStatus}" />
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <h:link value="Details" outcome="viewPropertyDetails.xhtml?propId=#{lcda.id}" title="Click to view details" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}" />
+                        <h:outputText value="&#160;" /> | <h:outputText value="&#160;" />
+                        <h:commandLink value="Delete" actionListener="#{lcdaWardsDataBean.deleteProperty()}" onclick="if (!confirm('Delete Property!?')) {
+                                    return false;
+                                }" 
+                                       rendered="#{lcda.propertyValuationStatus eq 'PENDING VALUATION' and request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                            <f:param name="ppid" value="#{lcda.id}" />
+                        </h:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </ui:fragment>
+            <ui:fragment rendered="#{lcdaWardsDataBean.showSeacrhResult}">
+                <div style="float: left; margin-right:300px;">
+                    <h:commandLink value="Next 400 Records" action="#{lcdaWardsDataBean.nextRecordSet}" rendered="#{lcdaWardsDataBean.recordCount ge 400}"/>
+                </div>
+                <div>
+                    <h:commandLink value="Previous 400 Records" action="#{lcdaWardsDataBean.previousRecordSet()}"/>
+                </div>
+                <p:dataTable var="wdpr" value="#{lcdaWardsDataBean.wardProperties}" rows="100" paginator="true" selectionMode="multiple" rowKey="#{wdpr.id}" rowIndexVar="sril"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {JumpToPageDropdown} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}" 
+                             selection="#{lcdaWardsDataBean.selectProperties}" rowsPerPageTemplate="100,200,300,400,500" id="flted">
+                    <f:facet name="{Exporters}">
+                        <h:commandLink>
+                            <p:graphicImage name="img/icons/ms-excel-icon.png" width="18" alt="Export"/>
+                            <p:dataExporter type="xls" target="flted" fileName="properties" />
+                        </h:commandLink>
+                    </f:facet>
+                    <p:column headerText="#">
+                        #{sril+1}
+                    </p:column>
+                    <p:column headerText="Property ID" sortBy="#{wdpr.propertyId}">
+                        <h:link value="#{wdpr.propertyId}" outcome="viewPropertyDetails.xhtml?propId=#{wdpr.id}" title="Click to view details" />
+                    </p:column>
+                    <p:column headerText="Address">
+                        <h:outputText value="#{wdpr.propertyNumber}, #{wdpr.wardStreetId.streetName} " rendered="#{wdpr.wardStreetId != null}" />
+                        <h:outputText value="#{wdpr.propertyNumber}, #{wdpr.irregularAddress}" rendered="#{wdpr.wardStreetId == null}" />
+                    </p:column>
+                    <p:column headerText="Irregular" sortBy="#{wdpr.isIrregularAddress}">
+                        <h:outputText value="Yes" rendered="#{wdpr.isIrregularAddress}" />
+                        <h:outputText value="No" rendered="#{not wdpr.isIrregularAddress}" />
+                    </p:column>
+                    <p:column headerText="District/ LCDA" sortBy="#{wdpr.wardStreetId.lcdaWardId.wardName}">
+                        <h:outputText value="#{wdpr.wardStreetId.lcdaWardId.wardName}" /> / <h:outputText value="#{wdpr.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}" />
+                    </p:column>
+                    <!-- p:column headerText="Property Type">
+                        <h:outputText value="#{wdpr.propertyTypes}" />
+                    </p:column -->
+                    <p:column headerText="PC Rating">
+                        <h:outputText value="#{wdpr.propertyQualities.qualityName} #{wdpr.propertyQualities.percentageValue}" />
+                    </p:column>
+                    <p:column headerText="Captured On" sortBy="#{wdpr.dateCaptured}">
+                        <h:outputText value="#{wdpr.dateCaptured}">
+                            <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Captured By" sortBy="#{wdpr.capturedById.person.fullName}">
+                        <h:outputText value="#{wdpr.capturedById.person.fullName}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Entered On" sortBy="#{wdpr.created}">
+                        <h:outputText value="#{wdpr.created}">
+                            <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Pushed" sortBy="#{wdpr.isInitsSynced}">
+                        <h:outputText value="Yes"  rendered="#{wdpr.isInitsSynced}" />
+                        <h:outputText value="No"  rendered="#{not wdpr.isInitsSynced}" />
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{wdpr.propertyValuationStatus}">
+                        <h:outputText value="#{wdpr.propertyValuationStatus}" />
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <h:link value="Details" outcome="viewPropertyDetails.xhtml?propId=#{wdpr.id}" title="Click to view details" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}" />
+                        <h:outputText value="&#160;" /> | <h:outputText value="&#160;" />
+                        <h:commandLink value="Delete" actionListener="#{lcdaWardsDataBean.deleteProperty()}" onclick="if (!confirm('Delete Property!?')) {
+                                    return false;
+                                }" 
+                                       rendered="#{wdpr.propertyValuationStatus eq 'PENDING VALUATION' and request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                            <f:param name="ppid" value="#{wdpr.id}" />
+                        </h:commandLink>
+                    </p:column>
+                </p:dataTable>
+                <div id="msg_div" style="display: none;"></div>
+                <!-- div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel value="Every Record in Result Set " for="flnw" />
+                    <h:selectBooleanCheckbox value="#{lcdaWardsDataBean.fullResultSet}" id="flnw" />
+                </div -->
+                <ui:fragment rendered="#{lcdaWardsDataBean.selectedStatus eq 'READYINITS' or lcdaWardsDataBean.selectedStatus eq 'PENDING' or lcdaWardsDataBean.selectedStatus eq 'PARTIAL'}">
+                    <div id="pshdiv" class="submit">
+                        <h:commandButton id="pushBtn" value="Send To Inits" class="submit"  action="#{lcdaWardsDataBean.pushToInits}" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR') and lcdaWardsDataBean.selectedStatus eq 'READYINITS'}" />
+                        <h:commandButton id="rtnBtn" value="Return To Data Entry" onclick="PF('dlg').show();" class="submit" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}" />
+                    </div>
+                </ui:fragment>
+            </ui:fragment>
+
+            <div style="float: left;">Total Records: <h:outputText value="#{lcdaWardsDataBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <div class="action">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><h:link value="List All Barelands" outcome="allBarelands.xhtml" title="CLICK HERE TO VIEW ALL BARELAND PROPERTIES"/></li>
+                    <li><h:link value="New Bareland" outcome="/app/dataEntry/createBareland.xhtml" title="CLICK HERE TO VIEW ALL BARELAND PROPERTIES" rendered="#{request.isUserInRole('DATA ENTRY')}"/></li>
+                </ul>
+            </div>
+            <p:dialog header="Login" widgetVar="dlg" resizable="false">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="rmks" value="Remarks:" />
+                    <h:inputTextarea value="#{lcdaWardsDataBean.remarks}" id="ldsz" />
+                    <h:message id="ldsz_" for="ldsz" errorClass="error-message" />
+                </div>
+                <p:commandButton value="Return" actionListener="#{lcdaWardsDataBean.returnToDataEntry}" oncomplete="handleLoginRequest(xhr, status, args)" />
+            </p:dialog>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            var select_count = 0;
+            $(document).ready(function () {
+                $(".ui-state-highlight").each(function () {
+                    select_count++;
+
+                });
+                console.log('selected row is: ' + select_count);
+            });
+
+            $(document).on('ready', function () {
+                $(".ui-state-highlight").each(function () {
+                    select_count++;
+
+                });
+                console.log('selected row is: ' + select_count);
+            });
+
+            $('#propsform\\:dtrn').change(function () {
+
+                if ($(this).val() === 'SELECT DATE RANGE') {
+                    $('#dtediv').fadeIn(100);
+                    $('#rngdiv').fadeOut(100);
+                }
+            });
+
+            $('#propsform\\:rtnBtn').click(function (ev) {
+
+                ev.preventDefault();
+            });
+
+            function handleLoginRequest(xhr, status, args) {
+                if (args.validationFailed || !args.loggedIn) {
+                    PF('dlg').jq.effect("shake", {times: 5}, 100);
+                    $('#msg_div').html('All Selected Properties have been sent back to the officer(s) that verified them.<br />Reload page to see changes.');
+                } else {
+                    PF('dlg').hide();
+                    $('#loginLink').fadeOut();
+                }
+            }
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

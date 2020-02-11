@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <h:form id="lcdaForm">
+            <h2>All LCDAs</h2>
+            <p:dataTable var="lcda" value="#{lcdaWardsDataBean.lcdaAreas}" rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="Name" sortBy="#{lcda.lcdaName}">
+                    <h:outputText value="#{lcda.lcdaName}" />
+                </p:column>
+                <p:column headerText="Senatorial District">
+                    <h:outputText value="#{lcda.senatorialDistrictId.districtName}" />
+                </p:column>
+                <p:column headerText="Chairman">
+                    <h:outputText value="#{lcda.lcdaChairmanId.person.firstName}" />
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{lcda.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Actions">
+                    Some Action
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

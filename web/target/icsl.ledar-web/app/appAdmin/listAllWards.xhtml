@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{lcdaWardsDataBean.initAllWardView}" />
+        </f:metadata>
+        <h:form id="wardForm">
+            <h2>All Districts</h2>
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                    <li><h:link value="Reference Data" outcome="/app/appAdmin/referenceDataList.xhtml" title="Click to go back"/></li>
+                    <li><h:link value="Create New District" outcome="/app/appAdmin/createNewWard.xhtml" title="Create New Ward" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}"/></li>
+                </ul>
+            </div>
+            <!--p:panel id="toggleable" header="Search Ward Name" toggleable="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <h:panelGrid columns="1" cellpadding="10" >
+                    <h:inputText id="wrd_name" />
+                    <h:outputLabel for="lksearcg" value="Like Search:" style="float: none; display: inline;" />
+                    <h:selectBooleanCheckbox id="lksearcg" title="Click here to do a like expression search" />
+                    <h:commandButton id="saveBtn" value="Search" class="submit" />
+                </h:panelGrid>
+            </p:panel -->
+            <div id="res_div"></div>
+            <div id="cound_div">Total Records: #{lcdaWardsDataBean.recordCount}</div>
+            <p:dataTable var="lcda" value="#{lcdaWardsDataBean.lcdaWards}" rows="50" paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="50,70,100">
+                <p:column headerText="Name" sortBy="#{lcda.wardName}">
+                    <h:outputText value="#{lcda.wardName}" />
+                </p:column>
+                <p:column headerText="LCDA/LGA">
+                    <h:outputText value="#{lcda.localCouncilDevAreaId.lcdaName}" />
+                </p:column>
+                <p:column headerText="Created By">
+                    <h:outputText value="#{lcda.createdById.person.fullName}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{lcda.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Actions">
+                    <!-- h:commandLink value="District Properties" action="#{lcdaWardsDataBean.loadWardProperties(lcda)}" title="New LCDA"/ -->
+                    Properties
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: #{lcdaWardsDataBean.recordCount}</div>
+            <div class="action">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><h:link value="Create New District" outcome="/app/appAdmin/createNewWard.xhtml" title="Create New LCDA"/></li>
+                </ul>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            $('#wardForm\\:saveBtn').click(function (evt) {
+                if ($('#wardForm\\:wrd_name').val() !== "") {
+                    $('#res_div').html('Searching, please wait..');
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/rest/restSearch/searchWardName/" + $('#wardForm\\:wrd_name').val() + "/" + $('#wardForm\\:lksearcg').is(':checked'),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            if (data !== null) {
+                                console.log('data returned successfully');
+                                $('#res_div').html('');
+                                for (var row in data) {
+                                    $('#res_div').append('<div><span>Ward Name: </span>' + data[row]['wardName'] + '</div>');
+                                }
+                            } else {
+                                console.log('data not returned successfully');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                } else {
+                    console.log('no value yet: ');
+                }
+
+                evt.preventDefault();
+            });
+        </script>
+    </ui:define>
+</ui:composition>
+

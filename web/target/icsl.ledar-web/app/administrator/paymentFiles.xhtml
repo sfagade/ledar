@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{billingBean.initPaymentFiles}" />
+        </f:metadata>
+        <h:form id="pfilesform">
+            <h2>Payment Files</h2>
+            <div id="breadcrumb">
+                <ul>
+                    <li><h:link value="Go Back" onclick="history.go(-1);" title="Click to go back"/></li>
+                    <li><h:link value="Upload Payment Data" outcome="/app/appAdmin/uploadData.xhtml" title="Click here to upload data"/></li>
+                    <li><h:link value="Duplicate Payments" outcome="/app/appAdmin/duplicatePayments.xhtml" title="Click here to view all the duplicate payment data"/></li>
+                </ul>
+            </div>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <div id="cound_div" style="float: none; font-weight: bold;">Total Records: <h:outputText value="#{billingBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <ui:repeat var="pymnt" value="#{billingBean.uploadedFiles}">
+                <div style="margin-bottom: 20px; padding: 6px; border-bottom: 1px solid rgba(63, 166, 239, 0.58); width: 80%;">
+                    <div><b>Name: </b>#{pymnt.fileName}</div>
+                    <div><b>Type: </b>#{pymnt.fileType}</div>
+                    <div><b>User: </b>#{pymnt.uploadedById.person.fullName}</div>
+                    <div><b>On: </b>
+                        <h:outputText value="#{pymnt.created}">
+                            <f:convertDateTime pattern="MMM dd, yyyy" />
+                        </h:outputText>
+                    </div>
+                </div>
+            </ui:repeat>
+        </h:form>
+    </ui:define>
+</ui:composition>

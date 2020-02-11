@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : viewPropertyDetails
+    Created on : Feb 28, 2016, 4:59:20 PM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h2>Property Details</h2>
+        <h:form id="propDetail">
+            <h:messages globalOnly="true" layout="block" infoClass="success" errorClass="error-message" />
+            <p:fieldset legend="Property Information" style="margin-bottom:15px; width: 75%;">
+                <a href="#" id="prnt">Print</a>
+                <table>
+                    <tr>
+                        <th width="200">Property Number</th>
+                        <td>#{valuationsBean.wardProperty.propertyId}</td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="200">Consultant</th>
+                        <td>#{valuationsBean.wardProperty.contractorId.organizationNm}</td>
+                    </tr>
+                    <tr>
+                        <th>Senatorial District</th>
+                        <td>#{valuationsBean.wardProperty.wardStreetId.lcdaWardId.localCouncilDevAreaId.senatorialDistrictId.districtName}</td>
+                    </tr>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.wardStreetId != null}">
+                        <tr>
+                            <th>Address</th>
+                            <td colspan="2">
+                                #{valuationsBean.wardProperty.propertyNumber}, #{valuationsBean.wardProperty.wardStreetId.streetName}, #{valuationsBean.wardProperty.wardStreetId.lcdaWardId.wardName},
+                                #{valuationsBean.wardProperty.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}
+                            </td>
+                        </tr>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.isBlockNumber}">
+                        <tr>
+                            <th>Block</th>
+                            <td colspan="2">Yes</td>
+                        </tr>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!valuationsBean.wardProperty.isBlockNumber}">
+                        <tr>
+                            <th>Plot</th>
+                            <td colspan="2">Yes</td>
+                        </tr>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.isIrregularAddress != null and ! empty valuationsBean.wardProperty.isIrregularAddress}">
+                        <tr>
+                            <th>Irregular Address</th>
+                            <td colspan="2">#{valuationsBean.wardProperty.irregularAddress}</td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th>Estate Name</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.estateName}</td>
+                    </tr>
+                    <tr>
+                        <th>LGA/LCDA</th>
+                        <td>#{valuationsBean.wardProperty.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}</td>
+                    </tr>
+                    <tr>
+                        <th>Side Of Road</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.roadSide}</td>
+                    </tr>
+                    <tr>
+                        <th>Property Type</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyTypes}</td>
+                    </tr>
+                    <tr>
+                        <th>Ownership Type</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.ownershipType}</td>
+                    </tr>
+                    <tr>
+                        <th>PC Rating</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyQualities.qualityName} #{valuationsBean.wardProperty.propertyQualities.percentageValue}</td>
+                    </tr>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.propertyTypes eq 'SERVICED'}">
+                        <tr>
+                            <th>Services</th>
+                            <td colspan="2">
+                                <ui:repeat var="serv" value="#{valuationsBean.propServices}">
+                                    #{serv.serviceTypeId.serviceTypeName} , 
+                                </ui:repeat>
+                            </td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th>Property Location</th>
+                        <td colspan="2">Latitude: #{valuationsBean.wardProperty.propertyLatitude} - Longitude: #{valuationsBean.wardProperty.propertyLongitude}</td>
+                    </tr>
+                    <tr>
+                        <th>No of Buildings</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.noOfBuildings}</td>
+                    </tr>
+                    <tr>
+                        <th>Land Area</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.landSize}M<sup>2</sup></td>
+                    </tr>
+                    <tr>
+                        <th>LWSC ID</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.lswcId}</td>
+                    </tr>
+                    <tr>
+                        <th>PHCN ID</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.phcnId}</td>
+                    </tr>
+                    <tr>
+                        <th>Has Title Documents</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.titleDocument}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.titleDocument}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <tr>
+                        <th>Showed Document Evidence</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.documentViewed}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.documentViewed}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <tr>
+                        <th>Enumeration Date</th>
+                        <td colspan="2">
+                            <h:outputText value="#{valuationsBean.wardProperty.dateCaptured}" >
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Additional Information</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.description}</td>
+                    </tr>
+                    <tr>
+                        <th>Data Captured By</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.capturedById.person.fullName}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Saved</th>
+                        <td colspan="2">
+                            <h:outputText value="#{valuationsBean.wardProperty.created}" >
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Neighbourhood Information" style="margin-bottom:15px; width: 75%;">
+                <table>
+                    <tr>
+                        <th width="200">Settlement Type</th>
+                        <td>#{valuationsBean.wardProperty.settlementTypeName}<h:outputText value="&#160;" /></td>
+                        <td><h:outputText value="&#160;" /></td>
+                    </tr>
+                    <tr>
+                        <th>Water Supply</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.waterSupply}</td>
+                    </tr>
+                    <tr>
+                        <th>Electricity</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.hasElectricity}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.hasElectricity}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.hasElectricity}">
+                        <tr>
+                            <th>Electricity Type</th>
+                            <td colspan="2">#{valuationsBean.wardProperty.electricityType}</td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th>Street Light</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.hasStreetLight}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.hasStreetLight}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.hasStreetLight}">
+                        <tr>
+                            <th>Street Light Type</th>
+                            <td colspan="2">#{valuationsBean.wardProperty.streetLightType}</td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th>Waste Disposal System</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.wasteDisposalSystem}</td>
+                    </tr>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.tarredRoad}">
+                        <tr>
+                            <th>Tarred Road</th>
+                            <td colspan="2">Yes</td>
+                        </tr>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{valuationsBean.wardProperty.untarredRoad}">
+                        <tr>
+                            <th>Untarred Road</th>
+                            <td colspan="2">Yes</td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th>Road Condition</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.roadCondition}</td>
+                    </tr>
+                    <tr>
+                        <th>Walkway</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.hasWalkways}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.hasWalkways}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <tr>
+                        <th>Street Landscaping</th>
+                        <ui:fragment rendered="#{valuationsBean.wardProperty.hasStreetLandscaping}">
+                            <td colspan="2">Yes</td>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!valuationsBean.wardProperty.hasStreetLandscaping}">
+                            <td colspan="2">No</td>
+                        </ui:fragment>
+                    </tr>
+                    <tr>
+                        <th>Nearest Bus Stop</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.nearestBusStop}</td>
+                    </tr>
+                    <tr>
+                        <th>Nearest Rail Terminal</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.nearestRailTerminus}</td>
+                    </tr>
+                    <tr>
+                        <th>Nearest Water Jetty</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.nearestWaterRerminus}</td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Bulding(s) Details" style="margin-bottom:15px; width: 75%;">
+                <ui:repeat var="bclas" value="#{valuationsBean.wardProperty.propertyClassificationDetailsList}">
+                    <table>
+                        <ui:fragment rendered="#{bclas.propertyClassificationId.classificationName eq 'RESIDENTIAL'}">
+                            <tr>
+                                <th>Building Type</th>
+                                <td>#{bclas.residentialTypeId.residentialTypeName}</td>
+                                <td>
+                                    <span style="float: right;">
+
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Building Use</th>
+                                <td>Residential</td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{bclas.propertyClassificationId.classificationName eq 'COMMERCIAL'}">
+                            <tr>
+                                <th>Building Use</th>
+                                <td>#{bclas.commercialTypeId.commercialTypeName}</td>
+                                <td>
+                                    <span style="float: right;">
+
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Building Use</th>
+                                <td>Commercial</td>
+                            </tr>
+                            <tr>
+                                <th>Business Name</th>
+                                <td colspan="2">#{bclas.propertyName}</td>
+                            </tr>
+                        </ui:fragment>
+                        <tr>
+                            <th>Structure</th>
+                            <ui:fragment rendered="#{bclas.isCompletedStructure}">
+                                <td colspan="2">Completed Building</td>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{!bclas.isCompletedStructure}">
+                                <td colspan="2">Uncompleted Building</td>
+                            </ui:fragment>
+                        </tr>
+                        <tr>
+                            <th width="200">Building Footprint</th>
+                            <td colspan="2">#{bclas.buildingFootprint}M<sup>2</sup></td>
+                        </tr>
+                        <tr>
+                            <th width="200">No. Of Floors</th>
+                            <td colspan="2">#{bclas.noOfFloors}</td>
+                        </tr>
+                        <tr>
+                            <th>No. Of Flats</th>
+                            <td colspan="2">#{bclas.noOfFlats}</td>
+                        </tr>
+                        <tr>
+                            <th>Rooms Per Flat</th>
+                            <td colspan="2">#{bclas.noOfRoomsPerFlat}</td>
+                        </tr>
+                        <ui:fragment rendered="#{bclas.commercialTypeId.commercialTypeName eq 'FILLING STATION'}">
+                            <tr>
+                                <th>Number Of Pumps</th>
+                                <td colspan="2">#{bclas.noOfPumps}</td>
+                            </tr>
+                        </ui:fragment>
+                    </table>
+                </ui:repeat>
+            </p:fieldset>
+            <p:fieldset legend="Biodata Information" style="margin-bottom:15px; width: 75%;" rendered="#{valuationsBean.wardProperty.ownershipType eq 'INDIVIDUAL'}">
+                <table>
+                    <tr>
+                        <th width="200">Biodata Type</th>
+                        <td>
+                            #{valuationsBean.wardProperty.propertyBiodataId.biodataPersonId.biodataTypeName}
+                        </td>
+                        <td><h:outputText value="&#160;" /></td>
+                    </tr>
+                    <tr>
+                        <th>Full Name</th>
+                        <td colspan="2">
+                            #{valuationsBean.wardProperty.propertyBiodataId.personTitleId.titleName} #{valuationsBean.wardProperty.propertyBiodataId.lastName} 
+                            #{valuationsBean.wardProperty.propertyBiodataId.firstName} #{valuationsBean.wardProperty.propertyBiodataId.middleName}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Phone Numbers</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.homePhoneNumber}, #{valuationsBean.wardProperty.propertyBiodataId.mobilePhoneNumber}</td>
+                    </tr>
+                    <tr>
+                        <th>Email Address</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.emailAddress}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.gender}</td>
+                    </tr>
+                    <tr>
+                        <th>Marriage Status</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.maritalStatus}</td>
+                    </tr>
+                    <tr>
+                        <th>Highest Education</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.highestEducation}</td>
+                    </tr>
+                    <tr>
+                        <th>Occupation</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.occupationId.occupationName}</td>
+                    </tr>
+                    <tr>
+                        <th>Employment Status</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.propertyBiodataId.employmentStatus}</td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Organization Owner" style="margin-bottom:15px; width: 75%;" rendered="#{valuationsBean.wardProperty.ownershipType eq 'ORGANIZATION'}">
+                <table>
+                    <tr>
+                        <th width="200">Organization Type</th>
+                        <td>
+                            #{valuationsBean.wardProperty.ownerOrganizationId.organizationTypeId.typeName}
+                        </td>
+                        <td>
+                            <h:outputText value="&#160;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.ownerOrganizationId.organizationNm}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.ownerOrganizationId.organizationNumber}</td>
+                    </tr>
+                    <tr>
+                        <th>Email Address</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.ownerOrganizationId.emailAddress}</td>
+                    </tr>
+                    <tr>
+                        <th>Web URL</th>
+                        <td colspan="2">#{valuationsBean.wardProperty.ownerOrganizationId.webUrl}</td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Pictures" style="margin-bottom:15px; width: 75%;">
+                <ui:repeat var="doc" value="#{valuationsBean.wardProperty.propertyDocumentsCollection}">
+                    <div  style="float: left;" class="image" >
+                        <p:graphicImage value="#{uploadedFilesBean.image}" width="200" rendered="#{not doc.fileUploadId.isDeleted}">
+                            <f:param name="fileId" value="#{doc.fileUploadId.id}" />
+                        </p:graphicImage>
+                    </div>
+                </ui:repeat>
+                <div>
+
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Property Valuation" style="margin-bottom:15px; width: 75%;" rendered="#{valuationsBean.wardProperty.propertyValuationStatus eq 'APPROVED AND PROCESSED'}">
+                <table>
+                    <tr>
+                        <th width="200">Accessed Value</th>
+                        <td>
+                            <h:outputText value="#{valuationsBean.wardProperty.propertyValuation.accessedValue}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>LUC Charge</th>
+                        <td>
+                            <h:outputText value="#{valuationsBean.wardProperty.propertyValuation.lucCharge}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Land Value</th>
+                        <td>
+                            <h:outputText value="#{valuationsBean.wardProperty.propertyValuation.landValue}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Building Value</th>
+                        <td>
+                            <h:outputText value="#{valuationsBean.wardProperty.propertyValuation.buildingValue}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Remarks</th>
+                        <td>#{valuationsBean.wardProperty.propertyValuation.valuationRemarks}</td>
+                    </tr>
+                    <tr>
+                        <th>Accessed By</th>
+                        <td>#{valuationsBean.wardProperty.propertyValuation.accessedById.person.fullName}</td>
+                    </tr>
+                    <tr>
+                        <th>Accessed On</th>
+                        <td>
+                            <h:outputText value="#{valuationsBean.wardProperty.propertyValuation.valuationDate}" >
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Valuation Action" style="margin-bottom:15px; width: 75%;" rendered="#{valuationsBean.wardProperty.propertyValuationStatus eq 'SENT FOR VALUATION' or valuationsBean.wardProperty.propertyValuationStatus eq 'REQUIRE MODIFICATIONS'}">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="sttlt" value="Property Status:" />
+                    <h:selectOneMenu value="#{valuationsBean.wardProperty.propertyValuationStatus}" id="sttlt" required="true">
+                        <f:selectItems value="#{valuationsBean.valuationStatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="sttlt_" for="sttlt" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pid" value="Accessed Value:" />
+                    <h:inputText id="pid" value="#{valuationsBean.propValuation.accessedValue}">
+                    </h:inputText>
+                    <h:message id="m_pid" for="pid" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="accdv" value="LUC Charge:" />
+                    <h:inputText id="accdv" value="#{valuationsBean.propValuation.lucCharge}">
+                    </h:inputText>
+                    <h:message id="accdv_" for="accdv" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="lndv" value="Land Value:" />
+                    <h:inputText id="lndv" value="#{valuationsBean.propValuation.landValue}">
+                    </h:inputText>
+                    <h:message id="lndv_" for="lndv" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="blvl" value="Building Value:" />
+                    <h:inputText id="blvl" value="#{valuationsBean.propValuation.buildingValue}">
+                    </h:inputText>
+                    <h:message id="blvl_" for="blvl" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="rmrk" value="Remarks:" />
+                    <h:inputTextarea id="rmrk" value="#{valuationsBean.formRemarks}" />
+                    <h:message id="rmrk_" for="rmrk" errorClass="error-message" />
+                </div>
+                <div class="submit">
+                    <h:commandButton id="upl_btn" value="Send" action="#{valuationsBean.updateValuationStatus}"/>
+                </div>
+            </p:fieldset>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $(document).ready(function () {
+                $('.image img').each(function () {
+                    $(this).click(function () {
+                        $(this).css('width', function (_, cur) {
+                            return cur === '200px' ? '100%' : '200px';
+                        });
+                    });
+                });
+            });
+
+            $('#prnt').click(function () {
+                alert('Sending to Print');
+                window.print();
+                return false;
+            });
+
+            $('#propDetail').on('submit', function (evt) {
+                $('input:text').each(
+                        function () {
+                            var value = $(this).val().replace(/,/g, "");
+                            $(this).val($.trim(value));
+                        }
+                );
+                //evt.preventDefault();
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

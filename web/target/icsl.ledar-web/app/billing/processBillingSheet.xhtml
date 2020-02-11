@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+@author sfagade
+@created Oct 24, 2016
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h2>Process Excel Bill File</h2>
+        <h:form id="excl_form" enctype="multipart/form-data">
+            <div class="input select required" style="margin-right: 50px;">
+                <h:outputLabel for="data_type" value="Data Type:" />
+                <h:selectOneMenu id="data_type" value="#{billingBean.selectedLoadType}" required="true" requiredMessage="Please select data type"> 
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                    <f:selectItems value="#{billingBean.data__load_type}" />
+                </h:selectOneMenu>
+                <h:message id="m_data_type" for="data_type" errorClass="error-message" />
+            </div>
+            <div style="margin-right: 50px;" class="input text required">
+                <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+                <h:outputLabel for="fvpic" value="Select Excel File:" />
+                <p:fileUpload value="#{billingBean.excelFile}" id="fvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                <h:message id="m_fvpic" for="fvpic" errorClass="error-message" />
+            </div>
+            <div class="submit">
+                <h:commandButton id="upl_btn" value="Submit" action="#{billingBean.proceeExcelSheet}" >
+                </h:commandButton>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

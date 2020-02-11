@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : listAllUsers
+    Created on : Feb 2, 2016, 9:49:45 AM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <h2>All Registered Users</h2>
+        <h:form>
+            <p:dataTable var="regUser" value="#{administratorBean.registeredUsers}" rows="50" paginator="true" rowIndexVar="rowIndex"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="#">
+                    #{rowIndex+1}
+                </p:column>
+                <p:column headerText="Name" sortBy="#{regUser.person.fullName}">
+                    <h:outputText value="#{regUser.person.fullName}" />
+                </p:column>
+                <p:column headerText="Login Name" sortBy="#{regUser.username}">
+                    <h:outputText value="#{regUser.username}" />
+                </p:column>
+                <p:column headerText="Number" sortBy="#{regUser.userNumber}">
+                    <h:outputText value="#{regUser.userNumber}" />
+                </p:column>
+                <p:column headerText="Assigned Role" sortBy="#{regUser.userRolesList[0].authenticationRoleId.roleName}">
+                    <h:outputText value="#{regUser.userRolesList[0].authenticationRoleId.roleName}" />
+                </p:column>
+                <p:column headerText="Email Address" sortBy="#{regUser.person.contactInformationsList[0].officeEmailAddress}">
+                    <h:outputText value="#{regUser.person.contactInformationsList[0].officeEmailAddress}" />
+                </p:column>
+                <p:column headerText="Created On" sortBy="#{regUser.created}">
+                    <h:outputText value="#{regUser.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Last Login" sortBy="#{regUser.lastlogindate}">
+                    <h:outputText value="#{regUser.lastlogindate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Active">
+                    <h:selectBooleanCheckbox value="#{regUser.active}" disabled="true" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        <div class="action">
+        	<h3>Quick Links</h3>
+        	<ul>
+        		<li><h:link id="create_link" value="Register New User" outcome="registerUser.xhtml" title="New User"/></li>
+        	</ul>
+        </div>
+    </ui:define>
+</ui:composition>
+

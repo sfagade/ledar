@@ -1,0 +1,30 @@
+<datasources xmlns="http://www.jboss.org/ironjacamar/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.jboss.org/ironjacamar/schema http://docs.jboss.org/ironjacamar/schema/datasources_1_0.xsd">
+    <datasource jndi-name="java:jboss/datasources/net.icsl.ledarDS" pool-name="net.icsl.ledar" use-java-context="true">
+        <!--   <connection-url>jdbc:mysql://192.168.30.10:3306/icsl_ledars_db?zeroDateTimeBehavior=convertToNull</connection-url>-->
+        <connection-url>jdbc:mysql://localhost:3306/icsl_ledars_dev?zeroDateTimeBehavior=convertToNull</connection-url>
+        <driver>com.mysql</driver>
+        <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+        <pool>
+            <min-pool-size>10</min-pool-size>
+            <max-pool-size>100</max-pool-size>
+            <prefill>true</prefill>
+        </pool>
+
+        <security>
+            <user-name>root</user-name>
+            <!-- user-name>ledar_user</user-name -->
+            <password>adminadmin</password>
+        </security>
+        <statement>
+            <prepared-statement-cache-size>32</prepared-statement-cache-size>
+            <share-prepared-statements/>
+        </statement>
+    </datasource>
+    <drivers>
+        <driver name="mysql" module="com.mysql">
+            <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+            <!-- datasource-class>com.mysql.jdbc.Driver</datasource-class -->
+        </driver>
+    </drivers>
+</datasources>

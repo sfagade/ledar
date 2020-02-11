@@ -1,0 +1,27 @@
+<!-- @author: sfagade, @created 1 Feb 2018 -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <!-- f:event type="preRenderView" listener="#{reportsBean.initBillsReportView}" / -->
+        </f:metadata>
+        <h:form>
+            <div id="breadcrumb">
+                <ul>
+                    <li><h:link value="Go Back" onclick="history.go(-1);" title="Click to go back"/></li>
+                    <ui:fragment rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                        <li><h:link value="All Payments" outcome="/app/reports/bills/billPayments.xhtml" title="Click here to view all payment data" /></li>
+                        <li><h:link value="Bills without payments" outcome="/app/reports/bills/billsWithoutPayments.xhtml" title="View Bills Reports"/></li>
+                        <li><h:link value="Bills WIth Payment" outcome="/app/reports/bills/billsWithPayment.xhtml" title="View All Delivered Bills Reports"/></li>
+                    </ui:fragment>
+                </ul>
+            </div>
+            <h2>Un-delivered Bills</h2>
+        </h:form>
+    </ui:define>
+</ui:composition>

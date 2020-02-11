@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <h2>Register New User</h2>
+        <h:form id="createUser" style="border: 0;">
+            <h:messages globalOnly="true" for="asu_btn" errorClass="error-message" infoClass="success" layout="block" />
+            <p:fieldset legend="Login Information" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="username" value="Username:" />
+                    <h:inputText id="username" value="#{register.user.username}" required="true" validatorMessage="Username is required!">
+                        <f:ajax event="blur" render="m_username" />
+                    </h:inputText>
+                    <h:message id="m_username" for="username" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="password" value="Password:" />
+                    <h:inputSecret id="password" value="#{register.user.pword}" required="true">
+                        <f:ajax event="blur" render="m_password" />
+                    </h:inputSecret>
+                    <h:message id="m_password" for="password" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="gen_pwd" value="Generate Password:" style="float: none; display: inline;" />
+                    <h:selectBooleanCheckbox id="gen_pwd" value="#{register.generatePwd}" title="The generated password will be sent to the user's email address" />
+                    <p:tooltip id="toolTipFocus" for="gen_pwd" showEvent="focus" hideEvent="blur" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="user_roles" value="User Role:" />
+                    <h:selectOneMenu id="user_roles" value="#{register.selected_roles}" required="true" converter="#{userRolesConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.auth_roles}" var="auth_role" itemLabel="#{auth_role.roleName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_roles" for="user_roles" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px; display: none;" id="sendiv">
+                    <h:outputLabel for="sen_ward" value="LCDA/LGA:" />
+                    <h:selectOneMenu id="sen_ward" value="#{register.selected_lcda}" converter="#{localCouncelDevConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                        <f:ajax listener="#{register.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>
+                    <h:message id="m_sen_ward" for="sen_ward" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px; display: none;" id="warddiv">
+                    <h:outputLabel for="lcda_ward" value="Wards:" />
+                    <h:selectOneMenu id="lcda_ward" value="#{register.selected_ward}" converter="#{lcdaWardsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Personal Data" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="lname" value="Last Name:" />
+                    <h:inputText id="lname" value="#{register.user.person.lastName}" required="true">
+                    </h:inputText>
+                    <h:message id="m_lname" for="lname" errorClass="error-message" />
+                </div> 
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="fname" value="First Name:" />
+                    <h:inputText id="fname" value="#{register.user.person.firstName}" required="true">
+                    </h:inputText>
+                    <h:message id="m_fname" for="fname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="mname" value="Middle Name:" />
+                    <h:inputText id="mname" value="#{register.user.person.middleName}">
+                    </h:inputText>
+                    <h:message id="m_mname" for="mname" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="gender" value="Gender:" />
+                    <h:selectOneMenu id="gender" value="#{register.user.person.gender}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{ledarAppBean.select_gender}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gender" for="gender" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="mstat" value="Marrital Status:" />
+                    <h:selectOneMenu id="mstat" value="#{register.user.person.maritalStatus}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{ledarAppBean.mstatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="mstat_" for="mstat" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="dob_" value="Date Of Birth" />
+                    <p:calendar id="dob_" value="#{register.dob_}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="state_ori" value="State Of Origin:" />
+                    <h:selectOneMenu id="state_ori" value="#{register.user.person.stateOfOriginId}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.geo_state_}" var="state_or" itemLabel="#{state_or.boundaryName}" itemValue="#{state_or}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_state_ori" for="state_ori" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr" value="Address:" />
+                    <h:inputText id="addr" value="#{register.address_.address}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr" for="addr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="addr_cont" value="Address (Cont.):" />
+                    <h:inputText id="addr_cont" value="#{register.address_.address2}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_city" value="City:" />
+                    <h:inputText id="addr_city" value="#{register.address_.city}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr_city" for="addr_city" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_state" value="Address State:" />
+                    <h:selectOneMenu id="addr_state" value="#{register.address_.geographicalStateId}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.geo_state_}" var="geo_ctry" itemLabel="#{geo_ctry.boundaryName}" itemValue="#{geo_ctry}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_addr_state" for="addr_state" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="emal" value="Office Email Address:" />
+                    <h:inputText id="emal" pt:type="email" pt:placeHolder="Enter Email" value="#{register.email_address}" required="true">
+                    </h:inputText>
+                    <h:message id="m_emal" for="emal" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pemal" value="Personal Email Address:" />
+                    <h:inputText id="pemal" pt:type="email" pt:placeHolder="Enter Email" value="#{register.personal_email}">
+                    </h:inputText>
+                    <h:message id="m_pemal" for="pemal" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="phnno" value="Phone Number:" />
+                    <h:inputText id="phnno" pt:type="number" value="#{register.phoneNumber}">
+                    </h:inputText>
+                    <h:message id="m_phnno" for="phnno" errorClass="error-message" />
+                </div>
+                <div class="input checkbox" style="margin-right: 50px;">
+                    <h:selectBooleanCheckbox id="isactive" value="#{register.isActive}" />
+                    <h:outputLabel for="isactive" value="Mark As Active:" />
+                    <h:message id="m_isactive" for="isactive" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{register.createNewUser}" >
+                </h:commandButton>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $.extend({
+                password: function (length, special) {
+                    var iteration = 0;
+                    var password = "";
+                    var randomNumber;
+                    if (special === undefined) {
+                        var special = false;
+                    }
+                    while (iteration < length) {
+                        randomNumber = (Math.floor((Math.random() * 100)) % 94) + 33;
+                        if (!special) {
+                            if ((randomNumber >= 33) && (randomNumber <= 47)) {
+                                continue;
+                            }
+                            if ((randomNumber >= 58) && (randomNumber <= 64)) {
+                                continue;
+                            }
+                            if ((randomNumber >= 91) && (randomNumber <= 96)) {
+                                continue;
+                            }
+                            if ((randomNumber >= 123) && (randomNumber <= 126)) {
+                                continue;
+                            }
+                        }
+                        iteration++;
+                        password += String.fromCharCode(randomNumber);
+                    }
+                    return password;
+                }
+            });
+            $('#createUser\\:user_roles').change(function () {
+
+                if (($(this).val() === "6") || ($(this).val() === "9") || ($(this).val() === "15")) {
+                    $('#createUser\\:sen_ward').attr('required', 'required');
+                    $('#sendiv').fadeIn('100');
+                    $('#warddiv').fadeIn('100');
+                    console.log('picked ward div: ', $('#warddiv'));
+                } else if ($(this).val() === "16") {
+                    $('#sendiv').fadeIn('100');
+
+                } else {
+                    $('#sendiv').fadeOut('100');
+                    $('#warddiv').fadeOut('100');
+                    $('#createUser\\:sen_ward').removeAttr('required');
+                }
+
+
+            });
+            
+            $(document).ready(function () {
+                $('#createUser\\:gen_pwd').click(function (e) {
+                    linkId = $(this).attr('checked');
+                    if (this.checked) {
+                        var password_ = $.password(8, false);
+                        $('#createUser\\:password').val(password_);
+                        console.log('button clicked: ' + password_);
+                    } else {
+                        $('#createUser\\:password').val('');
+                    }
+                    //e.preventDefault();
+                });
+                var role_value = $('#createUser\\:user_roles').val();
+                if ((role_value === "16") || (role_value === "15") || (role_value === "9")) {
+                    $('#createUser\\:sen_ward').attr('required', 'required');
+                    $('#sendiv').fadeIn('100');
+                    $('#warddiv').fadeIn('100');
+                } else {
+                    $('#sendiv').fadeOut('100');
+                    $('#warddiv').fadeOut('100');
+                    $('#createUser\\:sen_ward').removeAttr('required');
+                }
+
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

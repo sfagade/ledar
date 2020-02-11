@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : viewAllFieldOfficers
+    Created on : Feb 17, 2016, 12:47:16 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{internalCtrlBean.deliveryReport}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h:form id="fieldOForm">
+            <ui:fragment rendered="#{internalCtrlBean.startDate == null}">
+                <h2>Showing Field Activity For Today</h2>
+            </ui:fragment>
+            <ui:fragment rendered="#{internalCtrlBean.startDate != null}">
+                <h2>Showing Field Activity From 
+                    <h:outputText value="#{internalCtrlBean.startDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                    </h:outputText>
+                    to 
+                    <h:outputText value="#{internalCtrlBean.endDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                    </h:outputText></h2>
+            </ui:fragment>
+            <p:panel id="toggleable" header="Filter Report by Timeline" toggleable="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <div class="input select required" style="margin-right: 50px;" id="rangg_div">
+                    <h:outputLabel for="drange" value="Date Range:" />
+                    <h:selectOneMenu id="drange" value="#{internalCtrlBean.selectedRange}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{internalCtrlBean.dateRangeValues}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_drange" for="drange" errorClass="error-message" />
+                </div>
+                <div id="date_div" style="display: none;">
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="stdate" value="Start Date" />
+                        <p:calendar id="stdate" value="#{internalCtrlBean.startDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="eddate" value="End Date" />
+                        <p:calendar id="eddate" value="#{internalCtrlBean.endDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                </div>
+                <h:commandButton id="saveBtn" value="Search" class="submit" action="#{internalCtrlBean.filterDeliveryReport()}" />
+                <h:message id="m_chrmen" for="saveBtn" errorClass="error-message" />
+
+            </p:panel>
+            <p:dataTable var="propb" value="#{internalCtrlBean.propertiesList}" rows="70" paginator="true" rowKey="#{propb.modelId}" id="checkboxDT"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="70,100,200" style="margin-bottom:0">
+
+                <p:column headerText="Field Officer" sortBy="#{propb.logindetail.person.fullName}">
+                    <h:outputText value="#{propb.logindetail.person.fullName}" />
+                </p:column>
+                <p:column headerText="Delivery Date">
+                    <h:outputText value="#{propb.dateCaptured}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Count">
+                    <h:outputText value="#{propb.recordCount}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <h:link value="View Bills" outcome="viewOfficerDeliveryDetails.xhtml" title="Click to view all bills delivered on this date">
+                        <f:param name="offid" value="#{propb.logindetail.id}" />
+                    </h:link>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $('#fieldOForm\\:drange').change(function () {
+
+                if ($(this).val() === 'Select Date Range') {
+                    $('#date_div').fadeIn(100);
+                    $('#rangg_div').fadeOut(100);
+                    //$('#fieldOForm\\:drange').prop('selectedIndex',0);
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

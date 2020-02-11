@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+@author sfagade
+billPayments
+Jan 18, 2017
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{billingBean.initAllPayments}" />
+        </f:metadata>
+        <h:form id="bllpayForm" class="ui segment orange">
+            <div id="breadcrumb">
+                <ul>
+                    <li><h:link value="Go Back" onclick="history.go(-1);" title="Click to go back"/></li>
+                    <li><h:link value="Upload Payment Data" outcome="/app/appAdmin/uploadData.xhtml" title="Click here to upload data"/></li>
+                    <li><h:link value="Duplicate Payments" outcome="/app/appAdmin/duplicatePayments.xhtml" title="Click here to view all the duplicate payment data"/></li>
+                    <li><h:link value="Payment Files" outcome="/app/administrator/paymentFiles.xhtml" rendered="#{request.isUserInRole('ADMINISTRATOR')}" /></li>
+                </ul>
+            </div>
+            <h2>All Payment Information</h2>
+            <p:panel id="toggleable" header="Search Payment" toggleable="true" collapsed="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <div class="input select" style="margin-right: 50px;">
+                <h:outputLabel for="propId" value="Payer ID:" style="float: none; display: inline;" />
+                <h:inputText id="propId" value="#{billingBean.payerId}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                	<h:outputLabel for="pyrnid" value="Payer Name:" style="float: none; display: inline;" />
+                    <h:inputText id="pyrnid" value="#{billingBean.propertyOwnerName}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="prid" value="Property ID:" style="float: none; display: inline;" />
+                    <h:inputText id="prid" value="#{billingBean.propertyId}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="tnsr" value="Receipt Number:" style="float: none; display: inline;" />
+                    <h:inputText id="tnsr" value="#{billingBean.receipt}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="chrmen" value="LCDA:" />
+                    <h:selectOneMenu id="chrmen" value="#{billingBean.selectedLcda}" converter="#{localCouncelDevConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{billingBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="lcda_ward" value="District:" />
+                    <p:autoComplete id="lcda_ward" dropdown="true" value="#{billingBean.billDistrict}" var="str_" forceSelection="true" immediate="true"
+                                    itemLabel="#{str_.districtName} - #{str_.lga}" itemValue="#{str_}"  converter="#{priBillsDisConverterBean}" minQueryLength="3"
+                                    completeMethod="#{billingBean.runDistrictAutoComplete}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="rngdiv">
+                    <h:outputLabel for="dtrn" value="Payment Status:" />
+                    <h:selectOneMenu id="dtrn" value="#{billingBean.processedStatus}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{billingBean.paymentProcess}"/>
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="rngdiv">
+                    <h:outputLabel for="pydt" value="Payment Day:" />
+                    <h:selectOneMenu id="pydt" value="#{billingBean.selectedDate}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.dateSeacrhValues}"/>
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px; display: none;" id="dtediv">
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="dob_" value="Start Date: " />
+                        <p:calendar id="dob_" value="#{billingBean.startSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="endd" value="End Date: " />
+                        <p:calendar id="endd" value="#{billingBean.endSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                </div>
+                <div class="submit">
+                    <h:commandButton id="saveBtn" value="Search" class="submit"  action="#{billingBean.filterPaymentResult}" />
+                </div>
+                <h:commandLink value="Reset Query" action="#{billingBean.resetPaymentsForm}" title="Click here to return this page to it's default state"/>
+            </p:panel>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <div id="cound_div" style="float: left; display: block;">
+                <h:commandLink value="Process Payment" actionListener="#{billingBean.processBillPayments()}" onclick="if (!confirm('Process Payment!?')) {
+                            return false;
+                        }" rendered="#{request.isUserInRole('ADMINISTRATOR')}">
+                </h:commandLink>
+            </div>
+            <div id="cound_div" style="float: left;">
+                Total Records: 
+                <h:outputText value="#{billingBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText>
+            </div>
+            <div style="text-align: right;"><a href="#">Export to Excel</a></div>
+            <p:dataTable var="wdpr" value="#{billingBean.lazyBillsPayment}" rows="100" paginator="true" selectionMode="single" rowKey="#{wdpr.id}" rowIndexVar="sril"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                         selection="#{billingBean.selectedBill}" rowsPerPageTemplate="100,200,400,500" lazy="true">
+                <p:column headerText="#">
+                    #{sril+1}
+                </p:column>
+                <p:column headerText="Assess Ref" sortBy="#{wdpr.assessRef}">
+                    <h:link value="#{wdpr.assessRef}" outcome="viewPaymentDetails.xhtml?billPayId=#{wdpr.id}" title="Click to view details" />
+                </p:column>
+                <p:column headerText="Property ID" sortBy="#{wdpr.printedBillId.propertyIdn}">
+                    <h:outputText value="#{wdpr.printedBillId.propertyIdn}" />
+                </p:column>
+                <p:column headerText="Payer ID" sortBy="#{wdpr.VPayerId}">
+                    <h:outputText value="#{wdpr.VPayerId}" />
+                </p:column>
+                <p:column headerText="Payer Name" sortBy="#{wdpr.VPayerName}">
+                    <h:outputText value="#{wdpr.VPayerName}" />
+                </p:column>
+                <p:column headerText="Lga" sortBy="#{wdpr.lgaName}">
+                    <h:outputText value="#{wdpr.districtName} - #{wdpr.lgaName}" />
+                </p:column>
+                <p:column headerText="Amount Charge" sortBy="#{wdpr.printedBillId.amountDue}">
+                    <h:outputText value="#{wdpr.printedBillId.amountDue}">
+                        <f:convertNumber type="currency" currencySymbol="N"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Amount Paid" sortBy="#{wdpr.crAmount}">
+                    <h:outputText value="#{wdpr.crAmount}">
+                        <f:convertNumber type="currency" currencySymbol="N"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Paid On" sortBy="#{wdpr.entryDate}">
+                    <h:outputText value="#{wdpr.entryDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                    </h:outputText>
+                </p:column>
+                <!-- p:column headerText="Value Date" sortBy="#{wdpr.valueDate}">
+                    <h:outputText value="#{wdpr.valueDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                    </h:outputText>
+                </p:column -->
+                <p:column headerText="Consultant" sortBy="#{wdpr.consultantId.organzaitionCode}">
+                    <h:outputText value="#{wdpr.consultantId.organzaitionCode}" />
+                </p:column>
+                <p:column headerText="Applied" sortBy="#{wdpr.isProcessed}">
+                    <h:outputText value="Yes"  rendered="#{wdpr.isProcessed}" />
+                    <h:outputText value="No"  rendered="#{not wdpr.isProcessed}" />
+                </p:column>
+                <p:column headerText="Status" sortBy="#{wdpr.paymentStatus}">
+                    <h:outputText value="#{wdpr.paymentStatus}" />
+                </p:column>
+                <p:column headerText="Loaded On" sortBy="#{wdpr.created}">
+                    <h:outputText value="#{wdpr.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <!-- p:column headerText="Actions">
+                    <h:link value="Details" outcome="viewPaymentDetails.xhtml?billPayId=#{wdpr.id}" title="Click to view details" />
+                </p:column -->
+            </p:dataTable>
+
+            <div id="cound_div">Total Records: <h:outputText value="#{billingBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <div class="action">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><h:link value="All Bills" outcome="/app/reports/bills/printedBill.xhtml" title="Click here to view all printed bills data"/></li>
+                    <li><h:link value="Duplicate Payments" outcome="/app/appAdmin/duplicatePayments.xhtml" title="Click here to view all the duplicate payment data"/></li>
+                    <li><h:link value="Upload Payment Data" outcome="/app/appAdmin/uploadData.xhtml" title="Click here to upload data"/></li>
+                </ul>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+
+            $('#bllpayForm\\:dtrn').change(function () {
+
+                if ($(this).val() === 'SELECT DATE RANGE') {
+                    $('#dtediv').fadeIn(100);
+                    $('#rngdiv').fadeOut(100);
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

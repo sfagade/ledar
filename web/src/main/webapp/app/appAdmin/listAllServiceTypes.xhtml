@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+@date May 4, 2017
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{referenceBean.initServiceTypes}" />
+        </f:metadata>
+        <h:form id="cmTypeForm">
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                    <li><h:link value="Reference Data Home" outcome="/app/appAdmin/referenceDataList.xhtml" title="Click to go back"/></li>
+                    <li><h:link value="New Service Type" outcome="/app/appAdmin/createServiceType.xhtml" title="Click here to create new Service Type"/></li>
+                </ul>
+            </div>
+            <h2>All Service Types</h2>
+            <div>Total Records: <h:outputText value="#{referenceBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <p:dataTable var="lcda" value="#{referenceBean.serviceTypes}" rows="50" paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="50,75,100">
+                <p:column headerText="Name" sortBy="#{lcda.serviceTypeName}">
+                    <h:outputText value="#{lcda.serviceTypeName}" />
+                </p:column>
+                <!-- p:column headerText="INITS Mapping" sortBy="#{lcda.initsMapping}">
+                    <h:outputText value="#{lcda.initsMapping}" />
+                </p:column -->
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{lcda.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Actions">
+                    Edit | Delete
+                </p:column>
+            </p:dataTable>
+            <div>Total Records: <h:outputText value="#{referenceBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+        </h:form>
+    </ui:define>
+</ui:composition>

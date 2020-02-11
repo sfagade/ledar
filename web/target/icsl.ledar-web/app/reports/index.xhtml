@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : reportsLanding
+    Created on : Nov 25, 2015, 1:41:24 PM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <h:form id="repForm" class="ui segment">
+            <h2>Reports Work in progress</h2>
+            <ul>
+                <ui:fragment rendered="#{request.isUserInRole('REPORT ADMINISTRATOR')}">
+                    <li><a href="#{ledarAppBean.reportServer}/output?__report=test.rptdesign&amp;__format=pdf" target="blank">Test Report Server</a></li>
+                    <li>Property Reports
+                        <ul>
+                            <li><h:link value="Irregular Streets Reports" outcome="/app/reports/property/irregularStreetProperties.xhtml" title="All Properties with irregular streets"/></li>
+                        </ul>
+                    </li>
+                    <li><h:link value="POD Reports" outcome="/app/internalControl/podActivities.xhtml" rendered="#{request.isUserInRole('FIELD CO-ORDINATOR')}" title="All POD Reports"/></li>
+                </ui:fragment>
+            </ul>
+            <div style="width: 450px;">
+                <p:accordionPanel multiple="true">
+                    <p:tab title="Bills And Payments">
+                        <ul>
+                            <li><h:link value="All Bills with payments" outcome="/app/reports/bills/billsWithPayments.xhtml" title="View Bills Payment Reports"/></li>
+                            <li><h:link value="All Bills without payments" outcome="/app/reports/bills/billsWithoutPayments.xhtml" title="View Bills Reports"/></li>
+                            <li><h:link value="Delivered Bills" outcome="/app/reports/bills/deliveredBills.xhtml" title="View All Delivered Bills Reports"/></li>
+                            <li><h:link value="Undelivered Bills" outcome="/app/reports/bills/undeliveredBills.xhtml" title="View All Delivered Bills Reports"/></li>
+                            <ui:fragment rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR') or request.isUserInRole('HEAD OF OPERATIONS')}">
+                                <li><h:link value="Map Overview" outcome="/app/reports/maps/mapView.xhtml" title="View All Delivered Bills Reports"/></li>
+                            </ui:fragment>
+                        </ul>
+                    </p:tab>
+                    <p:tab title="Daily Reports">
+                        <ul>
+                            <ui:fragment rendered="#{request.isUserInRole('INTERNAL CONTROL') or request.isUserInRole('APPLICATION ADMINISTRATOR') or 
+                                                     request.isUserInRole('HEAD OF OPERATIONS') or request.isUserInRole('GEO-CODING OFFICER')}">
+                                <li><h:link value="Enumeration Report" outcome="/app/reports/property/dailyEnumeration.xhtml" title="View Enumeration report"/></li>
+                                <li><h:link value="Payment Report" outcome="/app/reports/bills/paymentReport.xhtml" title="Payment report"/></li>
+                                <li><h:link value="Delivery Reports" outcome="/app/internalControl/deliveryActivities.xhtml" title="All Delivery Reports"/></li>
+                            </ui:fragment>
+                        </ul>
+                    </p:tab>
+                    <p:tab title="Godfather Part III">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <p:graphicImage name="demo/images/godfather/godfather3.jpg" />
+                            <h:outputText value="After a break of more than 15 years...." />
+                        </h:panelGrid>
+                    </p:tab>
+                </p:accordionPanel>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

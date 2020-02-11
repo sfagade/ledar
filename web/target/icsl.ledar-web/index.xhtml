@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <h:panelGroup rendered="#{empty request.remoteUser}">
+            Welcome to My Investments, please go to <h:link value="login page" outcome="login" /> to start using this App
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not empty request.remoteUser}">
+
+            <h:panelGroup rendered="#{request.isUserInRole('Administrator')}">
+                <meta http-equiv="Refresh" content="0; URL=app/administrator/index.xhtml" />
+            </h:panelGroup>
+            <meta http-equiv="Refresh" content="0; URL=app/index.xhtml" />
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

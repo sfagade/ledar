@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+Sep 8, 2015
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="notid" value="#{registeredUser.notificationId}" />
+            <f:event type="preRenderView" listener="#{registeredUser.initializeUpdate}" />
+        </f:metadata>
+        <h:form id="updateProf" style="border: 0;">
+        	<h:link id="home_link" value="Employee Home" outcome="index.xhtml" title="Return Home" />
+            <h:messages globalOnly="true" for="asu_btn" errorClass="error-message" infoClass="success" layout="block" />
+            <h:inputHidden value="#{registeredUser.notificationId}" id="usrnm" />
+            <p:fieldset legend="Update Personal Information" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="lname" value="Last Name:" />
+                    <h:inputText id="lname" value="#{registeredUser.employee_profile.lname}" required="true">
+                    </h:inputText>
+                    <h:message id="m_lname" for="lname" errorClass="error-message" />
+                </div> 
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="fname" value="First Name:" />
+                    <h:inputText id="fname" value="#{registeredUser.employee_profile.fname}" required="true">
+                    </h:inputText>
+                    <h:message id="m_fname" for="fname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="mname" value="Middle Name:" />
+                    <h:inputText id="mname" value="#{registeredUser.employee_profile.mname}">
+                    </h:inputText>
+                    <h:message id="m_mname" for="mname" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="gender" value="Gender:" />
+                    <h:selectOneMenu id="gender" value="#{registeredUser.employee_profile.gender}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="--select--" />              
+                        <f:selectItems value="#{employee_.select_gender}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gender" for="gender" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="mstat" value="Marrital Status:" />
+                    <h:selectOneMenu id="mstat" value="#{registeredUser.employee_profile.maritalStatus}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="--select--" />              
+                        <f:selectItems value="#{employee_.mstatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="mstat_" for="mstat" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="dob_" value="Date Of Birth" />
+                    <p:calendar id="dob_" value="#{registeredUser.employee_profile.dob}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="state_ori" value="State Of Origin:" />
+                    <h:selectOneMenu id="state_ori" value="#{registeredUser.employee_profile.stateOfOrigin}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="--select--" />
+                        <f:selectItems value="#{employee_.geo_state_}" var="state_or" itemLabel="#{state_or.boundaryName}" itemValue="#{state_or}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_state_ori" for="state_ori" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr" value="Address:" />
+                    <h:inputText id="addr" value="#{registeredUser.employee_profile.addressId.address}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr" for="addr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="addr_cont" value="Address (Cont.):" />
+                    <h:inputText id="addr_cont" value="#{registeredUser.employee_profile.addressId.address2}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_city" value="City:" />
+                    <h:inputText id="addr_city" value="#{registeredUser.employee_profile.addressId.city}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr_city" for="addr_city" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_state" value="State:" />
+                    <h:selectOneMenu id="addr_state" value="#{registeredUser.employee_profile.addressId.geographicalStateId}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="--select--" />
+                        <f:selectItems value="#{employee_.geo_state_}" var="geo_ctry" itemLabel="#{geo_ctry.boundaryName}" itemValue="#{geo_ctry}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_addr_state" for="addr_state" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="emal" value="Office Email Address:" />
+                    <h:inputText id="emal" pt:type="email" pt:placeHolder="Enter Email" value="#{registeredUser.employee_contact.email}" required="true">
+                    </h:inputText>
+                    <h:message id="m_emal" for="emal" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pemal" value="Personal Email Address:" />
+                    <h:inputText id="pemal" pt:type="email" pt:placeHolder="Enter Email" value="#{registeredUser.employee_contact.backupEmail}">
+                    </h:inputText>
+                    <h:message id="m_pemal" for="pemal" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="phnno" value="Official Phone Number:" />
+                    <h:inputText id="phnno" pt:type="number" value="#{registeredUser.employee_contact.contactNo}" required="true">
+                    </h:inputText>
+                    <h:message id="m_phnno" for="phnno" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="bphnno" value="Personal Phone Number:" />
+                    <h:inputText id="bphnno" pt:type="number" value="#{registeredUser.employee_contact.backupNo}">
+                    </h:inputText>
+                    <h:message id="m_bphnno" for="bphnno" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="gen_pwd" value="Mark as complete:" style="float: none; display: inline;" />
+                    <h:selectBooleanCheckbox id="gen_pwd" value="#{registeredUser.markComplete}" title="If checked, form will be sent to HR Department for approval" />
+                    <p:tooltip id="toolTipFocus" for="gen_pwd" showEvent="focus" hideEvent="blur" />
+                </div>
+            </p:fieldset>
+            
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{registeredUser.updateMyProfile}" >
+                </h:commandButton>
+            </div>
+        </h:form>
+        </ui:define>
+        </ui:composition>

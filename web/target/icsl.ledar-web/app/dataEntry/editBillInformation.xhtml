@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : editBillInformation
+    Created on : Mar 9, 2016, 3:48:54 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="propId" value="#{updateManageBean.propertyBillId}" />
+            <!-- f:event type="preRenderView" listener="#{updateManageBean.loadBillForUpdate}" / -->
+            <!--http://stackoverflow.com/questions/3180400/recommended-jsf-2-0-crud-frameworks -->
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/dataEntry/myUploadedBills.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Edit Bill Information</h2>
+        <h:form id="upbillForm">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <h:inputHidden id="tempid" value="#{dataEntryBean.tempProperty.id}" />
+            <h:inputHidden id="templid" value="#{dataEntryBean.propertyBillId}" />
+            <div class="input select" style="margin-right: 50px;">
+                <h:outputLabel for="chrmen" value="Local Govt:" />
+                <h:selectOneMenu id="chrmen" value="#{dataEntryBean.selected_lcda}" converter="#{localCouncelDevConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                    <f:ajax listener="#{dataEntryBean.changedLcda}" render="lcda_ward" />
+                </h:selectOneMenu>
+            </div>
+            <div class="input select" style="margin-right: 50px;" id="warddiv">
+                <h:outputLabel for="lcda_ward" value="Wards:" />
+                <h:selectOneMenu id="lcda_ward" value="#{dataEntryBean.selected_ward}" converter="#{lcdaWardsConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    <f:ajax listener="#{dataEntryBean.changedWardStreets()}" render="ward_street" />
+                </h:selectOneMenu>
+                <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+            </div>
+            <div class="input select required" style="margin-right: 50px;" id="warddiv">
+                <h:outputLabel for="ward_street" value="Streets: " />
+                <h:selectOneMenu id="ward_street" value="#{dataEntryBean.tempProperty.wardStreetId}" converter="#{wardStreetConverterBean}" required="true">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{ledarAppBean.wardStreets}" var="ward1_" itemLabel="#{ward1_.streetName}" itemValue="#{ward1_}" />
+                </h:selectOneMenu>
+                <h:message id="m_ward_street" for="ward_street" errorClass="error-message" infoClass="success-message" />
+            </div>
+            <p:fieldset legend="Property Bill Information" style="margin-bottom:15px; width: 100%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="username" value="Property ID:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.propertyId}" id="username" />
+                    <h:message id="m_username" for="username" errorClass="error-message" />
+                </div>
+                <div id="res_div"></div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="usrname" value="Company Name:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.name}" id="usrname" />
+                    <h:message id="m_userame" for="usrname" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="lcdaard" value="Owner Title:" />
+                    <h:selectOneMenu id="lcdaard" value="#{dataEntryBean.selectedTitle}" converter="#{personTitlesConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.personTitle}" var="wrd_" itemLabel="#{wrd_.titleName}" itemValue="#{wrd_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_lcdaard" for="lcdaard" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="usrnme" value="Owner First Name:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.propertyOwnerFname}" id="usrnme"/>
+                    <h:message id="m_usrnme" for="usrnme" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="usrne" value="Owner Last Name:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.propertyOwnerLname}" id="usrne"/>
+                    <h:message id="m_usrne" for="usrne" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="usme" value="Owner Middle Name:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.propertyOwnerMiddleName}" id="usme"/>
+                    <h:message id="m_usme" for="usme" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="hseno" value="House Number:" />
+                    <h:inputText value="#{dataEntryBean.tempProperty.propertyNumber}" id="hseno"/>
+                    <h:message id="m_hseno" for="hseno" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="gender" value="Classification:" />
+                    <h:selectOneMenu id="gender" value="#{dataEntryBean.tempProperty.propertyClassification}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{ledarAppBean.classifications}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gender" for="gender" errorClass="error-message" />
+                </div>
+
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton value="Submit" action="#{updateManageBean.updateBillInformation}">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

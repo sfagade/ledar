@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : fullImage
+    Created on : Mar 12, 2016, 8:45:29 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="propId" value="#{landPropsBean.propertyId}" />
+        </f:metadata>
+        <h:form>
+            <p:graphicImage value="#{uploadedFilesBean.image}">
+                <f:param name="fileId" value="#{landPropsBean.propertyId}" />
+            </p:graphicImage>
+        </h:form>
+    </ui:define>
+</ui:composition>

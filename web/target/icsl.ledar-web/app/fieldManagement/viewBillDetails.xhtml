@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : viewBillDetails
+    Created on : Feb 15, 2016, 3:17:08 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="propId" value="#{landPropsBean.propertyBillId}" />
+            <!-- f:event type="preRenderView" listener="#{userManagement.processConfirm}" / -->
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/fieldManagement/listAllBills.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Property Bill Details</h2>
+        <h:form>
+            <p:fieldset legend="Bill Information" style="margin-bottom:15px; width: 75%;">
+                <table>
+                    <tr>
+                        <th width="200">Notice Number</th>
+                        <td>#{landPropsBean.selectedSingleBill.tempPropertyId.propertyId}</td>
+                    </tr>
+                    <tr>
+                        <th>Billing Year</th>
+                        <td>#{landPropsBean.selectedSingleBill.billingYear}</td>
+                    </tr>
+                    <tr>
+                        <th>Delivery Code</th>
+                        <td>#{landPropsBean.selectedSingleBill.deliveryCode}</td>
+                    </tr>
+                    <tr>
+                        <th>E payment Code</th>
+                        <td>#{landPropsBean.selectedSingleBill.epaymentCode}</td>
+                    </tr>
+                    <tr>
+                        <th>Current Year Charge</th>
+                        <td>
+                            <h:outputText value="#{landPropsBean.selectedSingleBill.yearCharge}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Previous Year Balance</th>
+                        <td>
+                            <h:outputText value="#{landPropsBean.selectedSingleBill.previousYearBalance}">
+                                <f:convertNumber type="currency" currencySymbol="N"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Delivered</th>
+                        <td>#{landPropsBean.selectedSingleBill.isDelivered}</td>
+                    </tr>
+                    <tr>
+                        <th>Bill Delivery Date</th>
+                        <td><h:outputText value="#{landPropsBean.selectedSingleBill.deliveryDate}" >
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Bill Assigned Date</th>
+                        <td><h:outputText value="#{landPropsBean.selectedSingleBill.assignedDate}" >
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Returned</th>
+                        <td>#{landPropsBean.selectedSingleBill.isReturned}</td>
+                    </tr>
+                    <tr>
+                        <th>Assigned</th>
+                        <td>#{landPropsBean.selectedSingleBill.isAssigned}</td>
+                    </tr>
+                    <tr>
+                        <th>Assigned To</th>
+                        <td>#{landPropsBean.selectedSingleBill.deliveryOfficerId.person.fullName}</td>
+                    </tr>
+
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Property Information" style="margin-bottom:15px; width: 75%;">
+                <table>
+                    <tr>
+                        <th width="200">Property ID</th>
+                        <td>#{landPropsBean.selectedSingleBill.tempPropertyId.propertyId}</td>
+                    </tr>
+                    <tr>
+                        <th width="200">Property Owner</th>
+                        <td>#{landPropsBean.selectedSingleBill.tempPropertyId.propertyOwnerLname} #{landPropsBean.selectedSingleBill.tempPropertyId.propertyOwnerFname}</td>
+                    </tr>
+                    <tr>
+                        <th>Property Address</th>
+                        <td> #{landPropsBean.selectedSingleBill.tempPropertyId.propertyNumber}, #{landPropsBean.selectedSingleBill.tempPropertyId.wardStreetId.streetName}, #{landPropsBean.selectedSingleBill.tempPropertyId.wardStreetId.lcdaWardId.wardName}, 
+                            #{landPropsBean.selectedSingleBill.tempPropertyId.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}</td>
+                    </tr>
+                    <tr>
+                        <th>Owner Occupied</th>
+                        <td> #{landPropsBean.selectedSingleBill.tempPropertyId.isOwnerOccupied}</td>
+                    </tr>
+                    <tr>
+                        <th width="200">Property Classification</th>
+                        <td>#{landPropsBean.selectedSingleBill.tempPropertyId.propertyClassification} </td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Prove Of Delivery" style="margin-bottom:15px; width: 75%;">
+                <table>
+                    <tr>
+                        <th width="200">Receiver Name</th>
+                        <td>#{landPropsBean.proveOfDelivery.receiverFirstName} #{landPropsBean.proveOfDelivery.receiverLastName}</td>
+                    </tr>
+                    <tr>
+                        <th>Email Address</th>
+                        <td>#{landPropsBean.proveOfDelivery.emailAddress}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number</th>
+                        <td>#{landPropsBean.proveOfDelivery.phoneNumber}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Delivered</th>
+                        <td>#{landPropsBean.proveOfDelivery.dateDelivered}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2" style="color: #000;">Picture</th>
+                    </tr>
+                    <ui:repeat var="o" value="#{landPropsBean.proveOfDelivery.deliveryFilesList}">
+                        <tr>
+                            <th colspan="2">
+                                <p:graphicImage value="#{uploadedFilesBean.image}" width="200">
+                                    <f:param name="fileId" value="#{o.fileUploadId.id}" />
+                                </p:graphicImage>
+                            </th>
+                        </tr>
+                    </ui:repeat>
+
+                    <tr>
+                        <th>Remarks</th>
+                        <td>#{landPropsBean.proveOfDelivery.remarks}</td>
+                    </tr>
+                </table>
+            </p:fieldset>
+        </h:form>
+    </ui:define>
+</ui:composition>

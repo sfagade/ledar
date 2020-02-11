@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : allBarelands
+    Created on : Mar 14, 2016, 8:43:13 AM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{lcdaWardsDataBean.initBarelandProperties}" />
+        </f:metadata>
+        <h:form id="bland_form">
+            <h2>All Bareland</h2>
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                </ul>
+            </div>
+            <p:panel id="toggleable" header="Search For Property Bill" toggleable="true" collapsed="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <h:outputLabel for="lksearcg" value="Property ID:" style="float: none; display: inline;" />
+                <h:inputText id="propId" value="#{lcdaWardsDataBean.searchPropId}" />
+                <br />
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="ward_street_" value="Streets: " />
+                    <p:autoComplete id="ward_street_" dropdown="true" value="#{lcdaWardsDataBean.wardStreet}" var="str_" converter="#{wardStreetConverterBean}" 
+                                    itemLabel="#{str_.streetName} - #{str_.estateName} - #{str_.lcdaWardId.wardName} - #{str_.lcdaWardId.localCouncilDevAreaId.lcdaName}" itemValue="#{str_}" 
+                                    completeMethod="#{lcdaWardsDataBean.runStreetAutoComplete}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="slcv" value="Valuation Status:" />
+                    <h:selectOneMenu id="slcv" value="#{lcdaWardsDataBean.selectedStatus}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{lcdaWardsDataBean.valuationStatus}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="offc" value="Field Officers:" />
+                    <h:selectOneMenu id="offc" value="#{lcdaWardsDataBean.selectedUser}" converter="#{loginUserConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{lcdaWardsDataBean.allFieldOfficers}" var="auth_role" itemLabel="#{auth_role.person.fullName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="rngdiv">
+                    <h:outputLabel for="dtrn" value="Enumeration Day:" />
+                    <h:selectOneMenu id="dtrn" value="#{lcdaWardsDataBean.selectedDay}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.dateSeacrhValues}"/>
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px; display: none;" id="dtediv">
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="dob_" value="Start Date: " />
+                        <p:calendar id="dob_" value="#{lcdaWardsDataBean.starSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="endd" value="End Date: " />
+                        <p:calendar id="endd" value="#{lcdaWardsDataBean.starSearchDate}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                </div>
+                <h:commandButton id="saveBtn" value="Search" class="submit"  action="#{lcdaWardsDataBean.filterBarelandResult}" />
+                <br />
+                <h:commandLink value="Reset Query" action="#{lcdaWardsDataBean.resetBarlandView}" title="Click here to return this page to it's default state"/>
+            </p:panel>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <div id="cound_div">Total Records: <h:outputText value="#{lcdaWardsDataBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <p:dataTable var="lcda" value="#{lcdaWardsDataBean.barelands}" rows="100" paginator="true" rowIndexVar="sril" selectionMode="multiple" rowKey="#{lcda}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         selection="#{lcdaWardsDataBean.selectedBareland}" rowsPerPageTemplate="100,150,200,300">
+                <p:column headerText="#">
+                    #{sril+1}
+                </p:column>        
+                <p:column headerText="Property ID" sortBy="#{lcda.propertyId}">
+                    <h:link value="#{lcda.propertyId}" outcome="viewBarelandDetails.xhtml?propId=#{lcda.id}" title="Click to view details" />
+                </p:column>
+                <p:column headerText="Address">
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.wardStreetId.streetName}" rendered="#{lcda.wardStreetId != null}" />
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.irregularAddress}" rendered="#{lcda.wardStreetId == null}" />
+                </p:column>
+                <p:column headerText="District" sortBy="lcda.wardStreetId.lcdaWardId.wardName">
+                    <h:outputText value="#{lcda.wardStreetId.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{lcda.dateCaptured}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Captured By">
+                    <h:outputText value="#{lcda.createdById.person.fullName}" />
+                </p:column>
+                <p:column headerText="Status" sortBy="#{lcda.propertyValuationStatus}">
+                    <h:outputText value="#{lcda.propertyValuationStatus}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <h:link value="Details" outcome="viewBarelandDetails.xhtml?propId=#{lcda.id}" title="Click to view details" />
+                    <h:outputText value="&#160;" />
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: <h:outputText value="#{lcdaWardsDataBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <ui:fragment rendered="#{lcdaWardsDataBean.selectedStatus eq 'READYINITS' or lcdaWardsDataBean.selectedStatus eq 'PENDING' or lcdaWardsDataBean.selectedStatus eq 'PARTIAL'}">
+                <div id="pshdiv" class="submit">
+                    <h:commandButton id="pushBtn" value="Send To Inits" class="submit"  action="#{lcdaWardsDataBean.pushLandToInits}" rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR') or request.isUserInRole('DATA ENTRY')}" />
+                </div>
+            </ui:fragment>
+            <div class="action">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><h:link id="create_link" value="List All Land Properties" outcome="listAllProperties.xhtml" title="New Street"/></li>
+                </ul>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            var select_count = 0;
+
+            $('#bland_form\\:dtrn').change(function () {
+
+                if ($(this).val() === 'SELECT DATE RANGE') {
+                    $('#dtediv').fadeIn(100);
+                    $('#rngdiv').fadeOut(100);
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

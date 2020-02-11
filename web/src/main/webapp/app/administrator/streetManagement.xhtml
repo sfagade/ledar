@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{administratorBean.initStreetManagementView}" />
+        </f:metadata>
+        <h:form id="streetWards">
+            <h2>All Streets In Wards</h2>
+            <div id="breadcrumb">
+                <ui:fragment rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                    <ul>
+                        <li><h:link value="Go Back" outcome="/app/administrator/index.xhtml" title="Click to go back"/></li>
+                    </ul>
+                </ui:fragment>
+                <ui:fragment rendered="#{!request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                    <ul>
+                        <li><h:link value="Go Back" outcome="/app/index.xhtml" title="Click to go back"/></li>
+                    </ul>
+                </ui:fragment>
+            </div>
+            <p:layout style="min-width:400px;height:650px;">
+                <p:layoutUnit position="west" header="Irregular Streets" resizable="true" size="300" minSize="40" maxSize="550" collapsible="true">
+                    <span style="font-weight: bold; line-height: 16px; padding-left: 6px;">Total Unique Streets Count: #{administratorBean.recordCount}</span>
+                    <p:scrollPanel style="width:270px;height:450px" id="irrStr">
+                        <ui:repeat var="bclas" value="#{administratorBean.uniqueStreets}">
+                            <div style="border-bottom: 1px solid #000;">
+                                <span><a href="#">#{bclas}</a></span>
+                            </div>
+                        </ui:repeat>
+                    </p:scrollPanel>
+                </p:layoutUnit>
+                <p:layoutUnit position="center" header="Created Streets" collapsible="false">
+                    <div><h:link value="Create New Streets" outcome="/app/appAdmin/createNewStreet.xhtml" title="Click create new street information"/></div>
+                    <div id="midmsg"></div>
+                    <div id="propDiv"></div>
+                </p:layoutUnit>
+                <p:layoutUnit position="south" size="100" header="Properties" resizable="true" closable="false" collapsible="true" style="min-height: 300px;">
+                    <div id="attdiv"></div>
+                    <div class="input select" style="margin-right: 50px;" id="warddiv">
+                        <h:outputLabel for="ward_street" value="Streets: " />
+                        <p:autoComplete id="ward_street" dropdown="true" value="#{administratorBean.selectedStreet}" var="str_" converter="#{wardStreetConverterBean}" 
+                                        itemLabel="#{str_.streetName} - #{str_.estateName} - #{str_.lcdaWardId.wardName} - #{str_.lcdaWardId.localCouncilDevAreaId.lcdaName}" itemValue="#{str_}" 
+                                        completeMethod="#{administratorBean.runAutoComplete}" />
+                        <h:message id="m_ward_street" for="ward_street" errorClass="error-message" infoClass="success-message" />
+                    </div>
+                    <div id="strDiv">
+
+                    </div>
+                    <h:commandButton id="assBtn" value="Attach Street" class="submit" />
+                </p:layoutUnit>
+            </p:layout>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+
+            var longDateFormat = 'MMM D, yyyy HH:mm:ss';
+
+            $('#streetWards\\:irrStr a').click(function (evt) {
+
+                $('#propDiv').html('<img src="#{request.contextPath}/resources/img/icons/ajax-loader.gif" alt="Loading" />');
+                $('#strDiv').html('<img src="#{request.contextPath}/resources/img/icons/ajax-loader.gif" alt="Loading" />');
+
+                $.ajax({
+                    type: "GET",
+                    url: "#{request.contextPath}/rest/restSearch/searchNewNotVeririfiedStreet/" + encodeURIComponent($(this).html()) + "/false/false",
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        //console.log(data);
+                        if (data !== null && data.length > 0) {
+                            $('#propDiv').html('<div>Total Streets Created: ' + data.length + '</di>');
+                            var htmml_ = '<table style="width: 100%;"><tr><th>Street ID</th><th>Street Name</th><th>Estate Name</th><th>District</th><th>LCDA</th><th>Created By</th><th>Verified</th>' +
+                                    '<th>Entered On</th><th>Action</th></tr>';
+                            for (var index in data) {
+                                htmml_ += '<tr><td>' + data[index]['street_id'] + '</td><td> ' + data[index]['streetName'] + '</td><td> ' + data[index]['estateName'] + '</td><td>' +
+                                        data[index]['districtName'] + '</td><td>' + data[index]['lcdaName'] + '</td><td>' + data[index]['createdByName'] + '</td><td><input type="checkbox"' +
+                                        ' value="verified" ' + ((data[index]['isVerified'] === 'true') ? 'checked' : '') + '/></td><td>' + jQuery.format.date(data[index]['created'], longDateFormat) +
+                                        '</td><td><a href="#" id="' + data[index]['street_id'] + '">Verify</a>&nbsp;|&nbsp;<a href="#" id="' + data[index]['street_id'] + '">Delete</a></td></tr>';
+
+                            }
+                            htmml_ += '</table>';
+                            $(htmml_).appendTo('#propDiv');
+                        } else {
+                            $('#propDiv').html('No street record was created for this street');
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    }
+                });
+
+                $.ajax({
+                    type: "GET",
+                    url: "#{request.contextPath}/rest/restSearch/searchPropertyByIrregularStreet/" + encodeURIComponent($(this).html()) + "/false",
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (props) {
+                        //console.log(props);
+                        if (props !== null && props.length > 0) {
+                            $('#strDiv').html('<div>Total Properties With Street Name: ' + props.length + '</di>');
+                            var html_ = '<table><tr><th>Property PIN</th><th>Address</th><th>Irregular</th><th>Estate Name</th><th>Captured On</th><th>Captured By</th><th>Entered On</th></tr>';
+
+                            for (var nxt in props) {
+                                html_ += '<tr><td><input type="checkbox" value="' + props[nxt]['propId'] + '"/> ' + props[nxt]['propertyPid'] + '</td><td>' + props[nxt]['propertyNumber'] + ', ' +
+                                        props[nxt]['irregularAddress'] + '</td><td>' + props[nxt]['isIrregularAddress'] + '</td><td>' + props[nxt]['estateName'] + '</td><td>' + 
+                                        jQuery.format.date(props[nxt]['dateCaptured'], longDateFormat) + '</td> <td>' + props[nxt]['capturedByName'] + '</td><td>' + 
+                                        jQuery.format.date(props[nxt]['dateCreated'], longDateFormat) + ' </td></tr>';
+
+                            }
+                            html_ += '</table>';
+                            $(html_).appendTo('#strDiv');
+                        } else {
+                            $('#strDiv').html('No Properties created for this street');
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    }
+                });
+
+                evt.preventDefault();
+            });
+
+            $(document).ready(function () {
+                $("#content").css("height", "800px");
+                //$('#streetWards\\:assBtn').prop('disabled', true);
+            });
+
+            $(document).on('click', "#propDiv a", function (evt) {
+
+                var parentrow = $(this).parent().parent();
+                var parenttd = $(this).parent();
+
+                console.log('about to perform: ', $(this).html());
+                if ($(this).html() === 'Verify') {
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/ajaxSupports?form_action=verynewstr&fileid=" + $(this).attr('id'),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (props) {
+
+                            if (props.hasOwnProperty('retMessage') && props['retMessage'] === 'Verify Success!') {
+                                parentrow.find('input[type="checkbox"]').attr('checked', 'checked');
+                                $('#midmsg').html('Street has been verified successfully, you can now attach properties to this street.');
+                                //$(this).fadeOut(100);
+                                $('#midmsg').removeClass('error-message').addClass('success');
+
+                                $('#propDiv a').each(function () {
+                                    if ($(this).html() === 'Verify') {
+                                        $(this).remove();
+                                    }
+                                });
+                                parenttd.remove();
+
+                            } else {
+                                $('#midmsg').html('Could not verify street, please try again later.');
+                                $('#midmsg').removeClass('success').addClass('error-message');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+
+                } else if ($(this).html() === 'Delete') {
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/ajaxSupports?form_action=deleteunvrstreet&fileid=" + $(this).attr('id'),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (props) {
+
+                            if (props.hasOwnProperty('retMessage') && props['retMessage'] === 'Delete Success!') {
+                                parentrow.remove();
+                                $('#midmsg').html('Street has been deleted successfully.');
+                                $('#midmsg').removeClass('error-message').addClass('success');
+                            } else {
+                                $('#midmsg').html('Failed to delete street, please try again later.');
+                                $('#midmsg').removeClass('success').addClass('error-message');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                }
+
+                evt.preventDefault();
+            });
+
+            $('#streetWards\\:assBtn').click(function (evt) {
+
+                var streetId = $('#streetWards\\:ward_street_hinput').val();
+                
+                if (streetId !== '') {
+                    var myObject = new Object();
+                    var inx = 0;
+                    var onechecked = false;
+                    $('#strDiv input[type="checkbox"]').each(function () {
+                        if ($(this).is(':checked')) {
+                            console.log('field is checked');
+                            myObject[inx] = $(this).val();
+                            inx++;
+                            onechecked = true;
+                        }
+                    });
+
+                    if (onechecked) {
+                        var myString = JSON.stringify(myObject);
+                        console.log('json is: ', myString);
+                        $('#streetWards\\:assBtn').prop('disabled', true);
+
+                        $.ajax({
+                            type: "GET",
+                            url: "#{request.contextPath}/ajaxSupports",
+                            // The key needs to match your method's input parameter (case-sensitive).
+                            data: {form_action: "cleanpropertystreet", strid: streetId, properties: myString},
+                            contentType: "application/json",
+                            dataType: "JSON",
+                            success: function (data) {
+                                console.log(data);
+                                if (data['successMessage'].length > 0) {
+                                    $('#attdiv').html(data['successMessage'].length + ' properties was successfully updated');
+                                    $('#attdiv').addClass('success');
+                                    $('#strDiv').children().remove();
+                                    $('#streetWards\\:ward_street_input').val(' - - ');
+                                    $('#streetWards\\:ward_street_hinput').val('');
+                                }
+                                if (data['errorMessage'].length > 0) {
+                                    $('#attdiv').html(data['successMessage'].length + ' properties failed to update');
+                                    $('#attdiv').addClass('error-message');
+                                }
+                            },
+                            failure: function (errMsg) {
+                                console.log(data);
+                            }
+                        });
+                        $('#streetWards\\:assBtn').prop('disabled', false);
+                    }
+                } else {
+                    $('#attdiv').html('Please search and select for the street to attache this properties to');
+                    $('#attdiv').addClass('error-message');
+                }
+                evt.preventDefault();
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

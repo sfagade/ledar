@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : createNewContractor
+    Created on : Mar 15, 2016, 12:39:50 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+    <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/administrator/index.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Register Employee</h2>
+        <h:form id="createContractor" style="border: 0;">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <p:fieldset legend="Contractor Information" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="username" value="Contactor Name:" />
+                    <h:inputText id="username" value="#{contractorsBean.organization.organizationNm}" required="true" validatorMessage="Contractor is required!">
+                    </h:inputText>
+                    <h:message id="m_username" for="username" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="ccode" value="Contactor Code:" />
+                    <h:inputText id="ccode" value="#{contractorsBean.organization.organzaitionCode}" required="true" validatorMessage="Contractor is required!">
+                    </h:inputText>
+                    <h:message id="m_ccode" for="ccode" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="emal" value="Official Email Address:" />
+                    <h:inputText id="emal" pt:type="email" pt:placeHolder="Enter Email" value="#{contractorsBean.organization.emailAddress}" required="true">
+                    </h:inputText>
+                    <h:message id="m_emal" for="emal" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="phnno" value="Phone Number:" />
+                    <h:inputText id="phnno" pt:type="number" value="#{contractorsBean.organization.organizationNumber}">
+                    </h:inputText>
+                    <h:message id="m_phnno" for="phnno" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="gen_pwd" value="Enabled:" style="float: none; display: inline;" />
+                    <h:selectBooleanCheckbox id="gen_pwd" value="#{contractorsBean.organization.enabled}" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Head Office Address" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr" value="Address:" />
+                    <h:inputText id="addr" value="#{contractorsBean.address_.address}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr" for="addr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="addr_cont" value="Address (Cont.):" />
+                    <h:inputText id="addr_cont" value="#{contractorsBean.address_.address2}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_city" value="City:" />
+                    <h:inputText id="addr_city" value="#{contractorsBean.address_.city}" required="true">
+                    </h:inputText>
+                    <h:message id="m_addr_city" for="addr_city" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="addr_state" value="State:" />
+                    <h:selectOneMenu id="addr_state" value="#{contractorsBean.address_.geographicalStateId}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.geo_state_}" var="geo_ctry" itemLabel="#{geo_ctry.boundaryName}" itemValue="#{geo_ctry}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_addr_state" for="addr_state" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Contractor's Local Govt" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="sndisc" value="State:" />
+                    <h:selectOneMenu id="sndisc" value="#{contractorsBean.organization.senatorialDistrictId}" required="true" converter="#{senatorialDistrictConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{contractorsBean.allSenatorialDistricts}" var="asnd" itemLabel="#{asnd.districtName}" itemValue="#{asnd}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_sndisc" for="sndisc" errorClass="error-message" />
+                </div>
+                <p:selectManyCheckbox value="#{contractorsBean.selectedLcda}" converter="#{localCouncelDevConverterBean}" layout="grid" columns="3">
+                    <f:selectItems value="#{contractorsBean.availableLcdas}" var="avls" itemLabel="#{avls.lcdaName}" itemValue="#{avls}" />
+                </p:selectManyCheckbox>
+            </p:fieldset>
+            <p:fieldset legend="Admin Information" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="ausername" value="Username:" />
+                    <h:inputText id="ausername" value="#{contractorsBean.loginPerson.logindetailId.username}" required="true" validatorMessage="Username is required!">
+                        <f:ajax event="blur" render="m_ausername" />
+                    </h:inputText>
+                    <h:message id="m_ausername" for="ausername" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="lname" value="Last Name:" />
+                    <h:inputText id="lname" value="#{contractorsBean.loginPerson.lastName}" required="true">
+                    </h:inputText>
+                    <h:message id="m_lname" for="lname" errorClass="error-message" />
+                </div> 
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="fname" value="First Name:" />
+                    <h:inputText id="fname" value="#{contractorsBean.loginPerson.firstName}" required="true">
+                    </h:inputText>
+                    <h:message id="m_fname" for="fname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="mname" value="Middle Name:" />
+                    <h:inputText id="mname" value="#{contractorsBean.loginPerson.middleName}">
+                    </h:inputText>
+                    <h:message id="m_mname" for="mname" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="gender" value="Gender:" />
+                    <h:selectOneMenu id="gender" value="#{contractorsBean.loginPerson.gender}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{ledarAppBean.select_gender}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gender" for="gender" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="mstat" value="Marrital Status:" />
+                    <h:selectOneMenu id="mstat" value="#{contractorsBean.loginPerson.maritalStatus}" required="true"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{ledarAppBean.mstatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="mstat_" for="mstat" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="dob_" value="Date Of Birth" />
+                    <p:calendar id="dob_" value="#{contractorsBean.loginPerson.dob}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="state_ori" value="State Of Origin:" />
+                    <h:selectOneMenu id="state_ori" value="#{contractorsBean.loginPerson.stateOfOriginId}" required="true" converter="#{geoBoundaryConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.geo_state_}" var="state_or" itemLabel="#{state_or.boundaryName}" itemValue="#{state_or}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_state_ori" for="state_ori" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{contractorsBean.createNewContractor}">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

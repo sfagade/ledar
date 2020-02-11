@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        <f:event type="preRenderView" listener="#{registeredUser.initUserDetailView}" />
+        </f:metadata>
+
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h2>User Details</h2>
+        <div class='toast' style='display:none'></div>
+        <h:form id="detform" class="ui segment">
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <p:fieldset legend="Employee Information" style="margin-bottom:15px; width: 75%;">
+                <table>
+                    <ui:fragment rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                        <tr>
+                            <th width="200">Employee ID</th>
+                            <td>#{registeredUser.person.logindetailId.id}</td>
+                        </tr>
+                    </ui:fragment>
+                    <tr>
+                        <th width="200">Employee Number</th>
+                        <td>#{registeredUser.person.logindetailId.userNumber}</td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Information" style="margin-bottom:15px; width: 75%;">
+                <table class="ui single line table">
+                    <tr>
+                        <th width="200">Username</th>
+                        <td>#{registeredUser.person.logindetailId.username}</td>
+                    </tr>
+                    <tr>
+                        <th>User Role</th>
+                        <td>#{registeredUser.person.logindetailId.userRole.authenticationRoleId.roleName}</td>
+                    </tr>
+                    <tr>
+                        <th width="200">Account Active</th>
+                        <td>
+                            <h:selectBooleanCheckbox value="#{registeredUser.person.logindetailId.active}"
+                                                     disabled="#{!request.isUserInRole('APPLICATION ADMINISTRATOR')}" id="active_" />
+                            <span style="display: none;">#{registeredUser.person.logindetailId.id}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Full Name</th>
+                        <td>#{registeredUser.person.fullName}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>#{registeredUser.person.gender}</td>
+                    </tr>
+                    <tr>
+                        <th>Marital Status</th>
+                        <td>#{registeredUser.person.maritalStatus}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Of Birth</th>
+                        <td>
+                            <h:outputText value="#{registeredUser.person.dob}">
+                                <f:convertDateTime pattern="MMM dd, yyyy" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>State Of Origin</th>
+                        <td>#{registeredUser.person.stateOfOriginId.boundaryName}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>#{registeredUser.person.addressId.address}, #{registeredUser.person.addressId.address2}</td>
+                    </tr>
+                    <tr>
+                        <th>Enter On</th>
+                        <td>
+                            <h:outputText value="#{registeredUser.person.created}">
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Last Modified On</th>
+                        <td>
+                            <h:outputText value="#{registeredUser.person.modified}">
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Last Login Date</th>
+                        <td>
+                            <h:outputText value="#{registeredUser.person.logindetailId.lastlogindate}" rendered="#{registeredUser.person.logindetailId.lastlogindate != null}">
+                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                            </h:outputText>
+                            <h:outputText value="Never" rendered="#{registeredUser.person.logindetailId.lastlogindate == null}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Last Login IP</th>
+                        <td>
+                            <h:outputText value="#{registeredUser.person.logindetailId.lastLoginIp}" rendered="#{registeredUser.person.logindetailId.lastLoginIp != null}">
+                            </h:outputText>
+                            <h:outputText value="Never" rendered="#{registeredUser.person.logindetailId.lastLoginIp == null}" />
+                        </td>
+                    </tr>
+                </table>
+            </p:fieldset>
+            <p:fieldset legend="Registered Devices" style="margin-bottom:15px; width: 75%;">
+                <ui:repeat var="bclas" value="#{registeredUser.userDevices}">
+                    <table>
+                        <tr>
+                            <th>Device Name</th>
+                            <td>#{bclas.deviceName}</td>
+                        </tr>
+                        <tr>
+                            <th>MAC Address</th>
+                            <td>#{bclas.macAddress}</td>
+                        </tr>
+                        <tr>
+                            <th>OS Version</th>
+                            <td>#{bclas.osVersion}</td>
+                        </tr>
+                        <tr>
+                            <th>Imei Number</th>
+                            <td>#{bclas.imeiNumber}</td>
+                        </tr>
+                        <tr>
+                            <th>Enabled</th>
+                            <td>
+                                <h:outputText value="YES" rendered="#{bclas.isEnabled}" />
+                                <h:outputText value="NO" rendered="#{not bclas.isEnabled}" />
+                            </td>
+                        </tr>
+                    </table>
+                </ui:repeat>
+            </p:fieldset>
+            <div class="action ui vertical menu">
+                <div>
+                    <h3 class="header">Quick Links</h3>
+                    <ul class="menu">
+                        <h:link value="Change Password" class="item" outcome="changeUserPassword.xhtml" title="Click here to change user password">
+                            <f:param name="logindetailId" value="#{registeredUser.person.logindetailId.id}" />
+                        </h:link>
+                    </ul>
+                </div>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $(document).on('click', "checkbox[id$='active_']", function () {
+                var parent_ = $(this).parent().parent();
+
+                confirm('Are u serious!?');
+            });
+
+            $('input[type="checkbox"]').click(function () {
+                var checked_ = $(this).is(':checked');
+                var message = (!checked_) ? 'Disable User?' : 'Enable User?';
+                if (confirm(message)) {
+                    console.log('changing user status: ');
+                    var uid = $(this).parent().find('span').html();
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/ajaxSupports?form_action=cngustatus&user=" + uid + "&actn=" + message,
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            if (data !== null) {
+                                if (data.hasOwnProperty("success")) {
+                                    $('.toast').html(data['success']);
+
+                                } else {
+                                    $('.toast').html(data['errorMessage']);
+                                }
+                                $('.toast').fadeIn(400).delay(3000).fadeOut(400);
+                            } else {
+                                console.log('Some backend error');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

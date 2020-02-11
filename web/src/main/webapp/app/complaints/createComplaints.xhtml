@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+@created Apr 18, 2016
+-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{complaintsBean.initNewComplaintForm()}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h2>New Complaint Form</h2>
+        <h:form id="newComplnt" enctype="multipart/form-data">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <p:fieldset legend="Complaint Information" style="margin-bottom:15px; width: 75%;">
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="dob_" value="Complaint Date:" />
+                    <p:calendar id="dob_" value="#{complaintsBean.propComplaint.complaintDate}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true" rendered="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                    <h:message id="_dob_" for="dob_" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="cmplt" value="Complaint Source" />
+                    <h:selectOneMenu id="cmplt" value="#{complaintsBean.propComplaint.complaintSourceId}" required="true" converter="#{complntSourceConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.complaintSources}" var="lcda" itemLabel="#{lcda.sourceName}" itemValue="#{lcda}" />
+                    </h:selectOneMenu>
+                    <h:message id="cmplt_" for="cmplt" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="username" value="Property ID:" />
+                    <h:inputText id="username" value="#{complaintsBean.propComplaint.propertyId}" validatorMessage="Property ID not set!" required="true" />
+                    <h:message id="m_username" for="username" errorClass="error-message" />
+                    <span id="uname_"></span>
+                </div>
+                <div class="input select required" style="margin-right: 50px;" id="lcda_div">
+                    <h:outputLabel for="chrmen" value="LCDA:" />
+                    <h:selectOneMenu id="chrmen" value="#{complaintsBean.selectedLcda}" converter="#{localCouncelDevConverterBean}" required="true">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                        <f:ajax listener="#{complaintsBean.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select required" style="margin-right: 50px;" id="warddi_v">
+                    <h:outputLabel for="lcda_ward" value="District:" />
+                    <h:selectOneMenu id="lcda_ward" value="#{complaintsBean.selectedWard}" required="true" converter="#{lcdaWardsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="prpd" value="Property Address:" />
+                    <h:inputTextarea id="prpd" value="#{complaintsBean.propComplaint.complaintOwnerAddress}" required="true">
+                    </h:inputTextarea>
+                    <h:message id="prpd_" for="prpd" errorClass="error-message" />
+                </div>
+
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="gndr" value="Owner Type:" />
+                    <h:selectOneMenu value="#{complaintsBean.ownerType}" id="gndr" required="true">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItem itemValue="INDIVIDUAL" itemLabel="INDIVIDUAL" />
+                        <f:selectItem itemValue="ORGANIZATION" itemLabel="ORGANIZATION" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gndr" for="gndr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="qstnr" value="Questionaire:" />
+                    <h:selectOneMenu value="#{complaintsBean.propComplaint.questionaire}" id="qstnr">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItem itemValue="YES" itemLabel="YES" />
+                        <f:selectItem itemValue="NO" itemLabel="NO" />
+                    </h:selectOneMenu>
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Complainer Information" style="margin-bottom:15px; width: 75%;" id="conp">
+                <div id="pownd">
+                    <div class="input select" style="margin-right: 50px;" id="warddiv">
+                        <h:outputLabel for="prtl" value="Title:" />
+                        <h:selectOneMenu id="prtl" value="#{complaintsBean.propComplaint.ownerTitleId}" converter="#{personTitlesConverterBean}">
+                            <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                            <f:selectItems value="#{complaintsBean.personTitle}" var="pttle" itemLabel="#{pttle.titleName}" itemValue="#{pttle}" />
+                        </h:selectOneMenu>
+                        <h:message id="prtl_" for="prtl" errorClass="error-message" />
+                    </div>
+                    <div style="margin-right: 50px;" class="input text required">
+                        <h:outputLabel for="frnm" value="Full Name:" />
+                        <h:inputText id="frnm" value="#{complaintsBean.propComplaint.contactFullname}" required="true" validatorMessage="Complainer name is required!">
+                        </h:inputText>
+                        <h:message id="frnm_" for="frnm" errorClass="error-message" />
+                    </div>
+                    <div style="margin-right: 50px;" class="input text">
+                        <h:outputLabel for="dsgt" value="Designation:" />
+                        <h:inputText id="dsgt" value="#{complaintsBean.propComplaint.contactDesignation}">
+                        </h:inputText>
+                        <h:message id="dsgt_" for="dsgt" errorClass="error-message" />
+                    </div>
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="mphn" value="Main Phone Number:" />
+                    <h:inputText id="mphn" value="#{complaintsBean.propComplaint.contactPhoneNumber}">
+                    </h:inputText>
+                    <h:message id="mphn_" for="mphn" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="ophn" value="Other Phone Number:" />
+                    <h:inputText id="ophn" value="#{complaintsBean.propComplaint.contactOtherNumber}">
+                    </h:inputText>
+                    <h:message id="ophn_" for="ophn" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="emld" value="Email Address:" />
+                    <h:inputText id="emld" value="#{complaintsBean.propComplaint.contactEmailAddress}">
+                    </h:inputText>
+                    <h:message id="emld_" for="emld" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="ropr" value="Relationship to Property:" />
+                    <h:selectOneMenu id="ropr" value="#{complaintsBean.propComplaint.complainerRelationship}" required="true" converter="#{relationshipConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.relationshipList}" var="lcda" itemLabel="#{lcda.relationshipName}" itemValue="#{lcda}" />
+                    </h:selectOneMenu>
+                    <h:message id="ropr_" for="cmplt" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Property Owner Information" style="margin-bottom:15px; width: 75%;">
+                <div id="psdiv">
+                    <div style="margin-right: 50px;" class="input text">
+                        <h:outputLabel for="pwln" value="Property Owner Last Name:" />
+                        <h:inputText id="pwln" value="#{complaintsBean.propComplaint.propertyOwnerLname}">
+                        </h:inputText>
+                    </div>
+                    <div style="margin-right: 50px;" class="input text">
+                        <h:outputLabel for="pwfn" value="Property Owner First Name:" />
+                        <h:inputText id="pwfn" value="#{complaintsBean.propComplaint.propertyOwnerFname}">
+                        </h:inputText>
+                    </div>
+                    <div style="margin-right: 50px;" class="input text">
+                        <h:outputLabel for="pwmn" value="Property Owner Middle Name:" />
+                        <h:inputText id="pwmn" value="#{complaintsBean.propComplaint.propertyOwnerMname}">
+                        </h:inputText>
+                    </div>
+                </div>
+                <div style="margin-right: 50px;" class="input text" id="cmpdiv">
+                    <h:outputLabel for="pwcmn" value="Property Company Name:" />
+                    <h:inputText id="pwcmn" value="#{complaintsBean.propComplaint.propertyCompanyName}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pwpn" value="Property Owner Phone No.:" />
+                    <h:inputText id="pwpn" value="#{complaintsBean.propComplaint.propertyOwnerPhoneNo}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pwea" value="Property Owner Email:" />
+                    <h:inputText id="pwea" value="#{complaintsBean.propComplaint.propertyOwnerEmail}">
+                    </h:inputText>
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pwdob" value="Property Owner DOB:" />
+                    <p:calendar id="pwdob" value="#{complaintsBean.propComplaint.propertyOwnerDob}" pattern="MM/dd/yyyy" yearRange="c-85:c+0" navigator="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="pwad" value="Property Owner Addess:" />
+                    <h:inputTextarea id="pwad" value="#{complaintsBean.propComplaint.propertyOwnerAddress}">
+                    </h:inputTextarea>
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Complaint Details" style="margin-bottom:15px; width: 75%;">
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="cmplty" value="Complaint Type:" />
+                    <h:selectOneMenu id="cmplty" value="#{complaintsBean.compntDetail.complaintTypeId}" converter="#{compliTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.complaintType}" var="cmpli" itemLabel="#{cmpli.typeName}" itemValue="#{cmpli}" />
+                    </h:selectOneMenu>
+                    <h:message id="cmplty_" for="cmplty" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="cmpt" value="Complaints:" />
+                    <h:inputTextarea id="cmpt" value="#{complaintsBean.compntDetail.compaint}" required="true">
+                    </h:inputTextarea>
+                    <h:message id="cmpt_" for="user_roles" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="rcmd" value="Recommendation" />
+                    <h:inputTextarea id="rcmd" value="#{complaintsBean.compntDetail.recommendation}" required="true">
+                    </h:inputTextarea>
+                    <h:message id="rcmd_" for="user_roles" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="user_roles" value="Unit:" />
+                    <h:selectOneMenu id="user_roles" value="#{complaintsBean.compntDetail.complaintUnitId}" converter="#{userRolesConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.auth_roles}" var="auth_role" itemLabel="#{auth_role.roleName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_roles" for="user_roles" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Complaint Documents" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="fvpic" value="Select File:" />
+                    <p:fileUpload value="#{complaintsBean.complaintFile}" id="fvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:selectOneMenu id="dcty1" value="#{complaintsBean.selectedDocType}" converter="#{documentTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.docTypes}" var="dcty" itemLabel="#{dcty.documentTypeName}" itemValue="#{dcty}" />
+                    </h:selectOneMenu>
+                    <h:inputText id="dscr1" value="#{complaintsBean.descrip1}" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="fvpic1" value="Select File:" />
+                    <p:fileUpload value="#{complaintsBean.complaintFile2}" id="fvpic1" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:selectOneMenu id="dcty2" value="#{complaintsBean.selectedDocType1}" converter="#{documentTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.docTypes}" var="dcty" itemLabel="#{dcty.documentTypeName}" itemValue="#{dcty}" />
+                    </h:selectOneMenu>
+                    <h:inputText id="dscr2" value="#{complaintsBean.descrip2}" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="fvpic2" value="Select File:" />
+                    <p:fileUpload value="#{complaintsBean.complaintFile3}" id="fvpic2" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:selectOneMenu id="dcty3" value="#{complaintsBean.selectedDocType2}" converter="#{documentTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.docTypes}" var="dcty" itemLabel="#{dcty.documentTypeName}" itemValue="#{dcty}" />
+                    </h:selectOneMenu>
+                    <h:inputText id="dscr3" value="#{complaintsBean.descrip3}" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="fvpic4" value="Select File:" />
+                    <p:fileUpload value="#{complaintsBean.complaintFile4}" id="fvpic4" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:selectOneMenu id="dcty4" value="#{complaintsBean.selectedDocType3}" converter="#{documentTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.docTypes}" var="dcty" itemLabel="#{dcty.documentTypeName}" itemValue="#{dcty}" />
+                    </h:selectOneMenu>
+                    <h:inputText id="dscr4" value="#{complaintsBean.descrip4}" />
+                </div>
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{complaintsBean.saveNewComplaint}">
+                </h:commandButton>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $(document).ready(function () {
+
+                $('#newComplnt\\:gndr').change(function () {
+                    console.log('change called: ', $(this));
+                    if ($(this).val() === 'INDIVIDUAL') {
+                        $('#cmpdiv').fadeOut(110);
+                        $('#newComplnt\\:pwcmn').val('');
+                        $('#psdiv').fadeIn(110);
+                    } else {
+                        $('#cmpdiv').fadeIn(110);
+                        $('#psdiv').fadeOut(110);
+                        $('#psdiv input').each(function () {
+                            console.log('doing foreach: ', $(this));
+                        });
+                    }
+                });
+
+                $('input[type=text]').blur(function () {
+                    $(this).val($(this).val().toUpperCase());
+                });
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

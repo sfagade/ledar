@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="emlaad" value="#{userManagement.email_address}" />
+            <f:viewParam name="usrps" value="#{userManagement.username}" />
+            <f:viewParam name="acttok" value="#{userManagement.activation_key}" />
+            <f:event type="preRenderView" listener="#{userManagement.processConfirm}" />
+        </f:metadata>
+
+<!-- ui:fragment rendered="#{empty userManagement.username}" -->
+        <ui:fragment rendered="#{not empty requestScope.param.emlaad}">
+            <div class="success">
+                Your account has been created, please login to the email address you 
+                provided and click on the provided link to activate your account and
+                complete your registration.
+                <br />
+                Thank you.
+            </div>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : dailyBillsEntry
+    Created on : Mar 9, 2016, 8:11:49 AM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{internalCtrlBean.loadAllDataEntryOfficers}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back Home" outcome="/app/reports/index.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <ui:fragment rendered="#{internalCtrlBean.selectedEntryOfficer == null}">
+            <h2>Bill Entered By Users</h2>
+        </ui:fragment>
+        <ui:fragment rendered="#{internalCtrlBean.selectedEntryOfficer != null}">
+            <h2>Bill Entered By #{internalCtrlBean.selectedEntryOfficer.person.fullName}</h2>
+        </ui:fragment>
+        <h:form id="myBillsForm">
+            <div class="input select required" style="margin-right: 50px;" id="warddiv">
+                <h:outputLabel for="fieldo" value="Field Officers:" />
+                <h:selectOneMenu id="fieldo" value="#{internalCtrlBean.selectedEntryOfficer}" converter="#{loginUserConverterBean}" required="true">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{internalCtrlBean.allScanOfficers}" var="ward_" itemLabel="#{ward_.person.fullName} - #{ward_.person.logindetailId.userRole.authenticationRoleId.roleName}" 
+                                   itemValue="#{ward_}" />
+                </h:selectOneMenu>
+                <h:message id="m_fieldo" for="fieldo" errorClass="error-message" />
+            </div>
+            <div class="input select required" style="margin-right: 50px;">
+                <h:outputLabel for="dob_" value="Entry Date: " />
+                <p:calendar id="dob_" value="#{internalCtrlBean.dataEntryDate}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                </p:calendar>
+            </div>
+            <div class="submit">
+                <h:commandButton id="upl_btn" value="Search" action="#{internalCtrlBean.searchDayBillEntry}" >
+                </h:commandButton>
+            </div>
+            <div id="cound_div">Total Records: #{internalCtrlBean.recordsCount}</div>
+            <p:dataTable var="propb" value="#{internalCtrlBean.tempProperties}" rows="25" paginator="true" id="checkboxDT"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="25,35,40" style="margin-bottom:0">
+                <p:column headerText="Property ID" sortBy="#{propb.propertyId}">
+                    #{propb.propertyId}
+                </p:column>
+                <p:column headerText="Address">
+                    #{propb.propertyNumber}, #{propb.wardStreetId.streetName}, #{propb.wardStreetId.lcdaWardId.wardName}, 
+                    #{propb.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}
+                </p:column>
+                <p:column headerText="Billing Year">
+                    <h:outputText value="#{propb.propertyBillsList[0].billingYear}" />
+                </p:column>
+                <p:column headerText="District" sortBy="#{propb.wardStreetId.lcdaWardId.wardName}">
+                    <h:outputText value="#{propb.wardStreetId.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="LCDA/LGA" sortBy="#{propb.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}">
+                    <h:outputText value="#{propb.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}" />
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{propb.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: #{internalCtrlBean.recordsCount}</div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

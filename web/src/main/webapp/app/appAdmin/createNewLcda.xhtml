@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : createNewLcda
+    Created on : Feb 3, 2016, 2:24:13 PM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <h2>Create New LGA</h2>
+        <h:form id="lcdaForm">
+            <h:messages globalOnly="true" for="lcda_btn" errorClass="error-message" infoClass="success" layout="block" />
+            <div style="margin-right: 50px;" class="input text required">
+                <h:outputLabel for="lcda_name" value="LCDA/LGA Name:" />
+                <h:inputText id="lcda_name" value="#{lcdaWardsDataBean.lcdaArea.lcdaName}" required="true" validatorMessage="LCDA/LGA Name is required!">
+                </h:inputText>
+                <h:message id="m_lcda_name" for="lcda_name" errorClass="error-message" />
+            </div>
+            <div class="input select required" style="margin-right: 50px;">
+                <h:outputLabel for="chrmen" value="LCDA Chairman:" />
+                <h:selectOneMenu id="chrmen" value="#{lcdaWardsDataBean.selectedUser}" required="true" converter="#{loginUserConverterBean}">
+                    <f:selectItem itemValue="#{null}" itemLabel="--select--" />
+                    <f:selectItems value="#{ledarAppBean.unassignedChairmen}" var="auth_role" itemLabel="#{auth_role.person.fullName}" itemValue="#{auth_role}" />
+                </h:selectOneMenu>
+                <h:message id="m_chrmen" for="chrmen" errorClass="error-message" />
+            </div>
+            <div style="margin-right: 50px;" class="input text">
+                <h:outputLabel for="lcda_rem" value="LCDA/LGA Name:" />
+                <h:inputTextarea id="lcda_rem" value="#{lcdaWardsDataBean.lcdaArea.remarks}">
+                </h:inputTextarea>
+                <h:message id="m_lcda_rem" for="lcda_rem" errorClass="error-message" />
+            </div>
+            <div class="submit">
+                <h:commandButton id="lcda_btn" class="ui button" value="Submit" action="#{lcdaWardsDataBean.createNewLcda}" >
+                </h:commandButton>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

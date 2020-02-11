@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{updateManageBean.initNewBareland}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/index.xhtml" title="Click to go back"/></li>
+                <li><h:link value="List Barelands" outcome="/app/properties/allBarelands.xhtml" title="Click to view all entered properties"/></li>
+                <li><h:link value="List Properties" outcome="/app/properties/listAllProperties.xhtml" title="Click to view all entered properties"/></li>
+            </ul>
+        </div>
+        <style type="text/css">
+            #bldForm table {
+                margin-left: 170px;
+                width: 75%;
+            }
+        </style>
+        <h2>New Bareland Information</h2>
+        <h:form id="bldForm" enctype="multipart/form-data">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <p:fieldset legend="Property Information" style="margin-bottom:15px; width: 75%;">
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="dob_" value="Capture Date:" />
+                    <p:calendar id="dob_" value="#{updateManageBean.beland.dateCaptured}" required="true" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </p:calendar>
+                    <h:message id="_dob_" for="dob_" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="offc" value="Delivery Officers:" />
+                    <h:selectOneMenu id="offc" value="#{updateManageBean.beland.createdById}" converter="#{loginUserConverterBean}" required="true">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.allFieldOfficers}" var="auth_role" itemLabel="#{auth_role.person.fullName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="pid" value="Property ID:" />
+                    <h:inputText id="pid" value="#{updateManageBean.beland.propertyId}">
+                    </h:inputText>
+                    <h:message id="m_pid" for="pid" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="paddr" value="Property Address No.:" />
+                    <h:inputText id="paddr" value="#{updateManageBean.beland.propertyNumber}">
+                    </h:inputText>
+                    <h:message id="m_paddr" for="paddr" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="ward_street" value="Streets: " />
+                    <p:autoComplete id="ward_street" dropdown="true" value="#{updateManageBean.beland.wardStreetId}" var="str_" converter="#{wardStreetConverterBean}" 
+                                    itemLabel="#{str_.streetName} - #{str_.lcdaWardId.wardName}" itemValue="#{str_}" completeMethod="#{updateManageBean.testAutoComplete}" />
+                    <h:message id="m_ward_street" for="ward_street" errorClass="error-message" infoClass="success-message" />
+                </div>
+                <div class="input select" style="padding-left: 17px;">
+                    <h:outputLabel for="gen_pwd" value="Irregular Address:" style="float: none; display: inline;" />
+                    <h:selectBooleanCheckbox id="gen_pwd" value="#{updateManageBean.isIrregular}" />
+                </div>
+                <div class="input select required" style="margin-right: 50px; display: none;" id="lcda_div">
+                    <h:outputLabel for="chrmen" value="LCDA:" />
+                    <h:selectOneMenu id="chrmen" value="#{updateManageBean.selected_lcda}" converter="#{localCouncelDevConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                        <f:ajax listener="#{updateManageBean.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select required" style="margin-right: 50px; display: none;" id="warddi_v">
+                    <h:outputLabel for="lcda_ward" value="District:" />
+                    <h:selectOneMenu id="lcda_ward" value="#{updateManageBean.selected_ward}" converter="#{lcdaWardsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_lcda_ward" for="lcda_ward" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px; display: none;" id="irrdr" class="input text">
+                    <h:outputLabel for="piaddr" value="Address:" />
+                    <h:inputText id="piaddr" value="#{updateManageBean.beland.irregularAddress}">
+                    </h:inputText>
+                    <h:message id="m_piaddr" for="piaddr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="sttn" value="Estate Name:" />
+                    <h:inputText id="sttn" value="#{updateManageBean.beland.estateName}">
+                    </h:inputText>
+                    <h:message id="sttn_" for="sttn" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:selectOneRadio value="#{updateManageBean.blockPlot}" id="pltnlk" layout="pageDirection">
+                        <f:selectItem itemValue="Block" itemLabel="BLOCK" />
+                        <f:selectItem itemValue="Plot" itemLabel="PLOT" />
+                    </h:selectOneRadio>
+                    <h:message id="m_pltnlk" for="pltnlk" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="prsd" value="Road Side:" />
+                    <h:selectOneRadio value="#{updateManageBean.beland.roadSide}" id="prsd" required="true" layout="pageDirection">
+                        <f:selectItem itemValue="RIGHT" itemLabel="RIGHT SIDE" />
+                        <f:selectItem itemValue="LEFT" itemLabel="LEFT SIDE" />
+                        <f:selectItem itemValue="OTHER" itemLabel="OTHERS" />
+                    </h:selectOneRadio>
+                    <h:message id="m_prsd" for="prsd" errorClass="error-message" />
+                </div>
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="prqy" value="PC Rating:" />
+                    <h:selectOneMenu id="prqy" value="#{updateManageBean.beland.propertyQualities}" required="true" converter="#{propertyQtyConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.propQualities}" var="prpqty" itemLabel="#{prpqty.qualityName}-#{prpqty.percentageValue}" itemValue="#{prpqty}" />
+                    </h:selectOneMenu>
+                    <h:message id="prqy_" for="prqy" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="ldsz" value="Land Area:" />
+                    <h:inputText value="#{updateManageBean.beland.landSizeArea}" id="ldsz" required="true" />
+                    <h:message id="ldsz_" for="ldsz" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="pltt" value="Latitude:" />
+                    <h:inputText value="#{updateManageBean.beland.propertyLatitude}" required="true" id="pltt" />
+                    <h:message id="pltt_" for="pltt" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="lgtd" value="Longitude:" />
+                    <h:inputText value="#{updateManageBean.beland.propertyLongitude}" required="true" id="lgtd" />
+                    <h:message id="lgtd_" for="lgtd" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="wnsp" value="Ownership Type:" />
+                    <h:selectOneMenu value="#{updateManageBean.beland.ownershipType}" id="wnsp">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />  
+                        <f:selectItem itemValue="INDIVIDUAL" itemLabel="INDIVIDUAL" />
+                        <f:selectItem itemValue="ORGANIZATION" itemLabel="ORGANIZATION" />
+                    </h:selectOneMenu>
+                    <h:message id="m_prsd_" for="wnsp" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Biodata Information" style="margin-bottom:15px; width: 75%; display: none;" id="prbd">
+                <div class="input select required" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="bity" value="Owner Type:" />
+                    <h:selectOneMenu id="bity" value="#{updateManageBean.biodataPerson.biodataPersonId}" required="true" converter="#{biodataPersonTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.bioPersonTypes}" var="ward_" itemLabel="#{ward_.biodataTypeName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_bity" for="bity" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="prtl" value="Title:" />
+                    <h:selectOneMenu id="prtl" value="#{updateManageBean.biodataPerson.personTitleId}" converter="#{personTitlesConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.personTitle}" var="pttle" itemLabel="#{pttle.titleName}" itemValue="#{pttle}" />
+                    </h:selectOneMenu>
+                    <h:message id="prtl_" for="prtl" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="sname" value="Surname:" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.lastName}" id="sname" />
+                    <h:message id="m_sname" for="sname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="fname" value="First Name:" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.firstName}" id="fname" />
+                    <h:message id="m_fname" for="fname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="oname" value="Other Name:" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.middleName}" id="oname" />
+                    <h:message id="m_oname" for="oname" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="gndr" value="Gender:" />
+                    <h:selectOneMenu value="#{updateManageBean.biodataPerson.gender}" id="gndr">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItem itemValue="FEMALE" itemLabel="FEMALE" />
+                        <f:selectItem itemValue="MALE" itemLabel="MALE" />
+                    </h:selectOneMenu>
+                    <h:message id="m_gndr" for="gndr" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="mstat" value="Marrital Status:" />
+                    <h:selectOneMenu id="mstat" value="#{updateManageBean.biodataPerson.maritalStatus}"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{updateManageBean.mstatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="mstat_" for="mstat" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="edql" value="Education Qualification:" />
+                    <h:selectOneMenu id="edql" value="#{updateManageBean.biodataPerson.highestEducation}"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{updateManageBean.educationQualifications}" />
+                    </h:selectOneMenu>
+                    <h:message id="m_edql" for="edql" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddiv">
+                    <h:outputLabel for="ocp" value="Occupation:" />
+                    <h:selectOneMenu id="ocp" value="#{updateManageBean.biodataPerson.occupationId}" converter="#{occupationsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.occupations}" var="ward_" itemLabel="#{ward_.occupationName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                    <h:message id="ocp_" for="ocp" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="estu" value="Employment Status:" />
+                    <h:selectOneMenu id="estu" value="#{updateManageBean.biodataPerson.employmentStatus}"> 
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />              
+                        <f:selectItems value="#{updateManageBean.employmentStatus}" />
+                    </h:selectOneMenu>
+                    <h:message id="estu_" for="estu" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="thm" value="Telephone(Home):" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.homePhoneNumber}" id="thm" />
+                    <h:message id="thm_" for="thm" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text ">
+                    <h:outputLabel for="tpml" value="Telephone(mobile):" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.mobilePhoneNumber}" id="tpml" />
+                    <h:message id="tpml_" for="tpml" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="aeml" value="Email Address:" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.emailAddress}" id="aeml" />
+                    <h:message id="aeml_" for="aeml" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="wadr" value="Website Address:" />
+                    <h:inputText value="#{updateManageBean.biodataPerson.webAddress}" id="wadr" />
+                    <h:message id="wadr_" for="wadr" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Organization Data" style="margin-bottom:15px; width: 75%; display: none;" id="orwt">
+                <div class="input select required" style="margin-right: 50px;">
+                    <h:outputLabel for="rgnn" value="Organization Type:" />
+                    <h:selectOneMenu id="rgnn" value="#{updateManageBean.organization.organizationTypeId}" converter="#{orgTypeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{updateManageBean.organTypes}" var="orgn" itemLabel="#{orgn.typeName}" itemValue="#{orgn}" />
+                    </h:selectOneMenu>
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="ogty" value="Organization Name:" />
+                    <h:inputText value="#{updateManageBean.organization.organizationNm}" id="ogty" />
+                    <h:message id="ogty_" for="ogty" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="gphn" value="Phone Number:" />
+                    <h:inputText value="#{updateManageBean.organization.organizationNumber}" id="gphn" />
+                    <h:message id="gphn_" for="ogty" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="mldr" value="Email Address:" />
+                    <h:inputText value="#{updateManageBean.organization.emailAddress}" id="mldr" />
+                    <h:message id="mldr_" for="mldr" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text">
+                    <h:outputLabel for="wddr" value="Web Address:" />
+                    <h:inputText value="#{updateManageBean.organization.webUrl}" id="wddr" />
+                    <h:message id="wddr_" for="ogty" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <p:fieldset legend="Property Pictures" style="margin-bottom:15px; width: 75%;">
+                <div style="margin-right: 50px;" class="input text required">
+                    <h:outputLabel for="fvpic" value="Front View Picture:" />
+                    <p:fileUpload value="#{updateManageBean.fviewPic}" id="fvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_fvpic" for="fvpic" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text selected">
+                    <h:outputLabel for="svpic" value="Side View Picture:" />
+                    <p:fileUpload value="#{updateManageBean.sviewPic}" id="svpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_svpic_" for="svpic" errorClass="error-message" />
+                </div>
+                <div style="margin-right: 50px;" class="input text selected">
+                    <h:outputLabel for="rvpic" value="Rear View Picture:" />
+                    <p:fileUpload value="#{updateManageBean.rviewPic}" id="rvpic" mode="simple" skinSimple="true" allowTypes="jpg"/>
+                    <h:message id="m_rvpic" for="rvpic" errorClass="error-message" />
+                </div>
+            </p:fieldset>
+            <div class="submit">
+                <h:commandButton id="upl_btn" value="Submit" action="#{updateManageBean.saveNewBarelandData}" >
+                </h:commandButton>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+
+            $(document).ready(function () {
+                if ($('#bldForm\\:gen_pwd').is(':checked')) {
+                    $('#irrdr').fadeIn(100);
+                    $('#lcda_div').fadeIn(100);
+                    $('#warddi_v').fadeIn(100);
+                    $('#warddiv').fadeOut(100);
+                }
+                if ($('#bldForm\\:elct').is(':checked')) {
+                    $('#elty').fadeIn(100);
+                }
+                if ($('#bldForm\\:wnsp').val() === 'INDIVIDUAL') {
+                    $('#bldForm\\:prbd').fadeIn(100);
+                } else if ($('#bldForm\\:wnsp').val() === 'ORGANIZATION') {
+                    $('#bldForm\\:orwt').fadeIn(100);
+                }
+                if ($('#bldForm\\:strlt').is(':checked')) {
+                    $('#str_type_div').fadeIn(100);
+                }
+                if ($('#bldForm\\:rdtr').is(':checked')) {
+                    $('#rdtr_div').fadeIn(100);
+                } else {
+                    $('#utar_cond_div').fadeIn(100);
+                }
+                if ($('#bldForm\\:hdrf').is(':checked')) {
+                    $('#idcv_div').fadeIn(100);
+
+                }
+                if ($('#bldForm\\:ptyp').val() === 'SERVICED') {
+                    $('#ser_type_div').fadeIn(100);
+                }
+
+                $("select[id$='blds']").each(function (blds) {
+                    console.log('in foreach: ', blds, $(this).val());
+                    var parent_ = $(this).parent().parent();
+                    if ($(this).val() === '1') { //residential
+                        parent_.find('#rsdt_div').fadeIn(100);
+                        parent_.find('#rsdu_div').fadeIn(100);
+                        parent_.find('#cmrc_div').fadeOut(100);
+                        parent_.find('#bsn_div').fadeOut(100);
+                    } else if ($(this).val() === "2") { //commercial
+                        parent_.find('#cmrc_div').fadeIn(100);
+                        parent_.find('#bsn_div').fadeIn(100);
+                        parent_.find('#rsdt_div').fadeOut(100);
+                        parent_.find('#rsdu_div').fadeOut(100);
+                    }
+                });
+
+            });
+
+            $(document).on('change', "select[id$='blds']", function () {
+                var parent_ = $(this).parent().parent();
+
+                if ($(this).val() === '1') { //residential
+                    parent_.find('#rsdt_div').fadeIn(100);
+                    parent_.find('#rsdu_div').fadeIn(100);
+                    parent_.find('#cmrc_div').fadeOut(100);
+                    parent_.find('#bsn_div').fadeOut(100);
+                    parent_.find("select[id$='cmty']").val(0);
+                } else if ($(this).val() === "2") { //commercial
+                    parent_.find('#cmrc_div').fadeIn(100);
+                    parent_.find('#bsn_div').fadeIn(100);
+                    parent_.find('#rsdt_div').fadeOut(100);
+                    parent_.find('#rsdu_div').fadeOut(100);
+                    parent_.find("select[id$='rsdt']").val(0);
+                }
+            });
+
+            $(document).on('change', "select[id$='cmty']", function () {
+                var parent_ = $(this).parent().parent();
+
+                if ($(this).val() === '3') { //id for filling station
+                    parent_.find('#pmp_div').fadeIn(100);
+                    parent_.find('#bsn_div').fadeIn(100);
+                    parent_.find('#nflr_div').fadeOut(100);
+                    parent_.find('#nflt_div').fadeOut(100);
+                    parent_.find('#nrpf_div').fadeOut(100);
+                } else {
+                    parent_.find('#pmp_div').fadeOut(100);
+                }
+            });
+
+            $('#bldForm\\:gen_pwd').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#irrdr').fadeIn(100);
+                    $('#lcda_div').fadeIn(100);
+                    $('#warddi_v').fadeIn(100);
+                    $('#warddiv').fadeOut(100);
+                    $('#bldForm\\:ward_street').val('');
+                } else {
+                    $('#warddiv').fadeIn(100);
+                    $('#irrdr').fadeOut(100);
+                    $('#lcda_div').fadeOut(100);
+                    $('#warddi_v').fadeOut(100);
+                    $('#bldForm\\:piaddr').val('');
+                }
+            });
+            $('#bldForm\\:elct').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#elty').fadeIn(100);
+                } else {
+                    $('#elty').fadeOut(100);
+                    $("#bldForm\\:elstpe").val('0');
+                }
+            });
+            $('#bldForm\\:strlt').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#str_type_div').fadeIn(100);
+                } else {
+                    $('#str_type_div').fadeOut(100);
+                    $("#bldForm\\:sltyp").val('0');
+                }
+            });
+            $('#bldForm\\:rdtr').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#tar_cond_div').fadeIn(100);
+                    $('#utar_cond_div').fadeOut(100);
+                    $("#bldForm\\:utrcd").val('0');
+                } else {
+                    $('#tar_cond_div').fadeOut(100);
+                    $('#utar_cond_div').fadeIn(100);
+                    $("#bldForm\\:trcd").val('0');
+                }
+            });
+            $('#bldForm\\:hdrf').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#idcv_div').fadeIn(100);
+                } else {
+                    $('#idcv_div').fadeOut(100);
+                }
+            });
+            $('#bldForm\\:wnsp').change(function () {
+                if ($(this).val() === 'INDIVIDUAL') {
+                    $('#bldForm\\:prbd').fadeIn(100);
+                    $('#bldForm\\:orwt').fadeOut(100);
+                } else if ($(this).val() === 'ORGANIZATION') {
+                    $('#bldForm\\:orwt').fadeIn(100);
+                    $('#bldForm\\:prbd').fadeOut(100);
+                }
+            });
+
+            $('#bldForm\\:ptyp').change(function () {
+                if ($(this).val() === 'SERVICED') {
+                    $('#ser_type_div').fadeIn(100);
+                } else {
+                    $('#ser_type_div').fadeOut(100);
+                    $("input[name^='bldForm\\:svty']").each(function () {
+                        $(this).attr('checked', false);
+                    });
+                }
+            });
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

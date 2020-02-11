@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : listAllUsers
+    Created on : Feb 2, 2016, 9:49:45 AM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{administratorBean.initAllUsers}" />
+        </f:metadata>
+        <h:form class="ui segment">
+            <div id="breadcrumb">
+                <ul>
+                    <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                    <li><h:link value="Register New User" outcome="registerUser.xhtml" title="New User"/></li>
+                </ul>
+            </div>
+            <h2>All Registered Users</h2>
+            <div class='toast' style='display:none'></div>
+            <p:panel id="toggleable" header="Search For Person" toggleable="true" collapsed="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="ward_street_" value="Full Name " />
+                    <p:autoComplete id="ward_street_" dropdown="true" value="#{administratorBean.selectedLoginUser}" var="str_" converter="#{loginUserConverterBean}" 
+                                    itemLabel="#{str_.person.fullName}" itemValue="#{str_}" 
+                                    completeMethod="#{administratorBean.runPersonAutoComplete}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="offc" value="User Roles:" />
+                    <h:selectOneMenu id="offc" value="#{administratorBean.selectedRole}" converter="#{authRoleConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.auth_roles}" var="auth_role" itemLabel="#{auth_role.roleName}" itemValue="#{auth_role}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="submit"><h:commandButton id="saveBtn" value="Search" class="submit"  action="#{administratorBean.filterUsersList}" /></div>
+                <h:commandLink value="Reset Query" action="#{administratorBean.resetUsersDisplay}" title="Click here to return this page to it's default state"/>
+            </p:panel>
+            <div id="cound_div">Total Records: <h:outputText value="#{administratorBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <p:dataTable var="regUser" value="#{administratorBean.registeredUsers}" rows="100" paginator="true" rowIndexVar="rowIndex" tableStyleClass="ui single line striped table"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="50,100,150,200,300">
+                <p:column headerText="#" width="25">
+                    #{rowIndex+1}
+                </p:column>
+                <p:column headerText="Name" sortBy="#{regUser.person.fullName}">
+                    <h:link value="#{regUser.person.fullName}" outcome="userDetails.xhtml?usid=#{regUser.person.id}" title="Click here to view user full details"/>
+                </p:column>
+                <p:column headerText="Login Name" sortBy="#{regUser.username}">
+                    <h:outputText value="#{regUser.username}" />
+                </p:column>
+                <p:column headerText="Assigned Role" sortBy="#{regUser.userRolesList[0].authenticationRoleId.roleName}">
+                    <h:outputText value="#{regUser.userRolesList[0].authenticationRoleId.roleName}" />
+                </p:column>
+                <p:column headerText="Email Address" sortBy="#{regUser.person.contactInformationsList[0].officeEmailAddress}">
+                    <h:outputText value="#{regUser.person.contactInformationsList[0].officeEmailAddress}" />
+                </p:column>
+                <p:column headerText="Created On" sortBy="#{regUser.created}">
+                    <h:outputText value="#{regUser.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Last Login" sortBy="#{regUser.lastlogindate}">
+                    <h:outputText value="#{regUser.lastlogindate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Active">
+                    <h:selectBooleanCheckbox value="#{regUser.active}" disabled="#{!request.isUserInRole('APPLICATION ADMINISTRATOR') and !request.isUserInRole('ADMINISTRATOR USER')}" id="active_" />
+                    <span style="display: none;">#{regUser.id}</span>
+                </p:column>
+                <p:column headerText="Active">
+                    <h:link value="Edit Data" outcome="editUserInformation.xhtml" title="Click here to update information"/>
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: #{administratorBean.recordCount}</div>
+        </h:form>
+        <div class="action">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><h:link value="Register New User" outcome="registerUser.xhtml" title="New User"/></li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $(document).on('click', "checkbox[id$='active_']", function () {
+                var parent_ = $(this).parent().parent();
+
+                confirm('Are u serious!?');
+            });
+
+            $('input[type="checkbox"]').click(function () {
+                var checked_ = $(this).is(':checked');
+                var message = (!checked_) ? 'Disable User?' : 'Enable User?';
+                if (confirm(message)) {
+                    console.log('changing user status: ');
+                    var uid = $(this).parent().find('span').html();
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/ajaxSupports?form_action=cngustatus&user=" + uid + "&actn=" + message,
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            if (data !== null) {
+                                if (data.hasOwnProperty("success")) {
+                                    $('.toast').html(data['success']);
+
+                                } else {
+                                    $('.toast').html(data['errorMessage']);
+                                }
+                                $('.toast').fadeIn(400).delay(3000).fadeOut(400);
+                            } else {
+                                console.log('Some backend error');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>
+

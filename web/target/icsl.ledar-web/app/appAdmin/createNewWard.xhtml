@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : createNewWard
+    Created on : Feb 4, 2016, 11:27:52 AM
+    Author     : sfagade
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{lcdaWardsDataBean.initNewWardForm}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                <li><h:link value="All Districts" outcome="/app/appAdmin/listAllWards.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Create New District</h2>
+        <h:form id="wardForm">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="success" layout="block" />
+            <div class="input select required" style="margin-right: 50px;">
+                <h:outputLabel for="chrmen" value="Local Govt:" />
+                <h:selectOneMenu id="chrmen" value="#{lcdaWardsDataBean.selected_lcda}" converter="#{localCouncelDevConverterBean}" required="true">
+                    <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                    <f:selectItems value="#{loginBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                </h:selectOneMenu>
+            </div>
+            <div style="margin-right: 50px;" class="input text required">
+                <h:outputLabel for="username" value="District Name:" />
+                <h:inputText value="#{lcdaWardsDataBean.wardName}" id="username" required="true" />
+                <h:message id="m_username" for="username" errorClass="error-message" />
+            </div>
+            <div style="margin-right: 50px;" class="input text">
+                <h:outputLabel for="wcode" value="District Code:" />
+                <h:inputText value="#{lcdaWardsDataBean.wardCode}" id="wcode" />
+                <h:message id="m_wcode" for="wcode" errorClass="error-message" />
+            </div>
+            <div class="submit">
+                <h:commandButton id="asu_btn" value="Submit" action="#{lcdaWardsDataBean.saveNewWardInformation}">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

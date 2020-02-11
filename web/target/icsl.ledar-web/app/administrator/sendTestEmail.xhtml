@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+        </f:metadata>
+        <h:form id="billsform">
+            <div id="breadcrumb">
+                <ul>
+                    <li><h:link value="Go Back" onclick="history.go(-1);" title="Click to go back"/></li>
+                </ul>
+            </div>
+            <h:commandButton id="saveBtn" value="Send Mail Now" class="submit"  action="#{administratorBean.sendTestMail}" />
+            </h:form>
+            </ui:define>
+            </ui:composition>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+Sep 10, 2015
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="notid" value="#{notificBean.notificationId}" />
+            <f:event type="preRenderView" listener="#{notificBean.initializeUpdate}" />
+        </f:metadata>
+        <h:form id="approvalForm" style="border: 0;">
+            <table cellpadding="0" cellspacing="0">
+                <caption>User Information</caption>
+                <tr>
+                    <td colspan="2">
+                        <ui:fragment rendered="#{not empty registeredUser.person_profile.pictureUploadId}">
+                            <li>Pic Available, we should show it here</li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{empty registeredUser.person_profile.pictureUploadId}">
+                            <li>No Picture available</li>
+                        </ui:fragment>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="20%">Username</th>
+                    <td>#{notificBean.person.logindetailId.username}</td>
+                </tr>
+                <tr>
+                    <th>Full Name</th>
+                    <td>#{notificBean.person.fullName}</td>
+                </tr>
+                <tr>
+                    <th>Email Address</th>
+                    <td>#{notificBean.personContact.email}</td>
+                </tr>
+                <tr>
+                    <th>Official Number</th>
+                    <td>#{notificBean.personContact.contactNo}</td>
+                </tr>
+                <tr>
+                    <th>Marital Status</th>
+                    <td>#{notificBean.person.maritalStatus}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>#{notificBean.person.gender}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>#{notificBean.person.dob}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td></td>
+                </tr>
+            </table>
+        </h:form>
+    </ui:define>
+</ui:composition>

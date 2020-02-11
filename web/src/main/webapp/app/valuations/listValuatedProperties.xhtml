@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+@author sfagade
+@created May 10, 2016
+-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{valuationsBean.initValuatedProperty}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="listAllProperties.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h2>Valuated Properties</h2>
+        <h:form id="valuProp">
+            <div id="cound_div">Total Records: #{valuationsBean.recordCount}</div>
+            <h:messages globalOnly="true" layout="block" infoClass="success" errorClass="error-message" />
+
+            <p:dataTable var="lcda" value="#{valuationsBean.wardProperties}" rows="50" paginator="true" selectionMode="single" rowKey="#{lcda.id}"  rowIndexVar="rowIndex"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="40,50,70,100,200">
+                <p:column headerText="#">
+                    #{rowIndex+1}
+                </p:column>
+                <p:column headerText="Property ID" sortBy="#{lcda.propertyId}">
+                    <!-- h:outputText value="#{lcda.propertyId}" / -->
+                    <h:commandLink value="#{lcda.propertyId}" action="#{valuationsBean.initPropertyDetail()}" title="Click to view details">
+                        <f:param name="prpid" value="#{lcda.id}" />
+                    </h:commandLink>
+                </p:column>
+                <p:column headerText="Senate District">
+                    <h:outputText value="#{lcda.wardStreetId.lcdaWardId.localCouncilDevAreaId.senatorialDistrictId.districtName}" />
+                </p:column>
+                <p:column headerText="Consultant" sortBy="#{lcda.contractorId.organizationNm}">
+                    <h:outputText value="#{lcda.contractorId.organizationNm}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Address">
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.wardStreetId.streetName} " rendered="#{lcda.wardStreetId != null}" />
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.irregularAddress}" rendered="#{lcda.wardStreetId == null}" />
+                </p:column>
+                <p:column headerText="LGA/LCDA" sortBy="#{lcda.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}">
+                    <h:outputText value="#{lcda.wardStreetId.lcdaWardId.localCouncilDevAreaId.lcdaName}" />
+                </p:column>
+                <p:column headerText="Ward/Town" sortBy="#{lcda.wardStreetId.lcdaWardId.wardName}">
+                    <h:outputText value="#{lcda.wardStreetId.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="PC Rating">
+                    <h:outputText value="#{lcda.propertyQualities.qualityName} #{lcda.propertyQualities.percentageValue}" />
+                </p:column>
+                <p:column headerText="Accessed On" sortBy="#{lcda.propertyValuation.valuationDate}">
+                    <h:outputText value="#{lcda.propertyValuation.valuationDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Accessed By" sortBy="#{lcda.propertyValuation.accessedById.person.fullName}">
+                    <h:outputText value="#{lcda.propertyValuation.accessedById.person.fullName}">
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: #{valuationsBean.recordCount}</div>
+        </h:form>
+    </ui:define>
+</ui:composition>

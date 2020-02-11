@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="propId" value="#{landPropsBean.propertyId}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="../index.xhtml" title="Click to go back"/></li>
+                <li><h:link value="All Properties" outcome="listAllProperties.xhtml" title="Go to all properties"/></li>
+            </ul>
+        </div>
+        <h2>Properties Information</h2>
+        <h:form id="propInfo" class="ui segment">
+        <div id="cound_div" style="float: left;">Total Records: #{lcdaWardsDataBean.recordCount}</div>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <div style="text-align: right;"><a href="#">Export to Excel</a></div>
+            <p:dataTable var="lcda" value="#{lcdaWardsDataBean.wardProperties}" rows="50" paginator="true" selectionMode="single" rowKey="#{lcda.id}" rowIndexVar="rowIndex"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="40,50,70,100,200">
+                <p:column headerText="#">
+                    #{rowIndex+1}
+                </p:column>
+                <p:column headerText="Property ID" sortBy="#{lcda.propertyId}">
+                    <h:link value="#{lcda.propertyId}" outcome="viewPropertyDetails.xhtml?propId=#{lcda.id}" title="Click to view details" />
+                </p:column>
+                <p:column headerText="Address">
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.wardStreetId.streetName} " rendered="#{lcda.wardStreetId != null}" />
+                    <h:outputText value="#{lcda.propertyNumber}, #{lcda.irregularAddress}" rendered="#{lcda.wardStreetId == null}" />
+                </p:column>
+                <p:column headerText="Irregular" sortBy="#{lcda.isIrregularAddress}">
+                    <h:outputText value="Yes" rendered="#{lcda.isIrregularAddress}" />
+                    <h:outputText value="No" rendered="#{not lcda.isIrregularAddress}" />
+                </p:column>
+                <p:column headerText="District" sortBy="#{lcda.wardStreetId.lcdaWardId.wardName}">
+                    <h:outputText value="#{lcda.wardStreetId.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="Property Type">
+                    <h:outputText value="#{lcda.propertyTypes}" />
+                </p:column>
+                <p:column headerText="PC Rating">
+                    <h:outputText value="#{lcda.propertyQualities.qualityName} #{lcda.propertyQualities.percentageValue}" />
+                </p:column>
+                <p:column headerText="Captured On" sortBy="#{lcda.dateCaptured}">
+                    <h:outputText value="#{lcda.dateCaptured}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Captured By" sortBy="#{lcda.capturedById.person.fullName}">
+                    <h:outputText value="#{lcda.capturedById.person.fullName}">
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Entered On" sortBy="#{lcda.created}">
+                    <h:outputText value="#{lcda.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Pushed" sortBy="#{lcda.isVerified}">
+                    <h:outputText value="Yes"  rendered="#{lcda.isVerified}" />
+                    <h:outputText value="No"  rendered="#{not lcda.isVerified}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <h:link value="Details" outcome="viewPropertyDetails.xhtml?propId=#{lcda.id}" title="Click to view details" rendered="#{request.isUserInRole('GEO-CODING OFFICER')}" />
+                    <h:outputText value="&#160;" /> | <h:outputText value="&#160;" />
+                    <h:commandLink value="Delete" actionListener="#{lcdaWardsDataBean.deleteProperty()}" onclick="if (!confirm('Delete Property!?')) {
+                                return false;
+                            }" 
+                                   rendered="#{request.isUserInRole('GEO-CODING OFFICER') or request.isUserInRole('INTERNAL CONTROL') or request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                        <f:param name="ppid" value="#{lcda.id}" />
+                    </h:commandLink>
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: #{lcdaWardsDataBean.recordCount}</div>
+            <div class="action">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><h:link id="create_link" value="List All Barelands" outcome="allBarelands.xhtml" title="CLICK HERE TO VIEW ALL BARELAND PROPERTIES"/></li>
+                    <li><h:link value="New Bareland" outcome="/app/dataEntry/createBareland.xhtml" title="CLICK HERE TO VIEW ALL BARELAND PROPERTIES" rendered="#{request.isUserInRole('DATA ENTRY')}"/></li>
+                </ul>
+            </div>
+        </h:form>
+        </ui:define>
+        </ui:composition>

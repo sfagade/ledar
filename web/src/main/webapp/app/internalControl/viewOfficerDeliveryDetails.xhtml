@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : viewBillDetails
+    Created on : Feb 15, 2016, 3:17:08 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="offid" value="#{internalCtrlBean.officerId}" />
+            <f:event type="preRenderView" listener="#{internalCtrlBean.deliveryOfficerBills}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+            </ul>
+        </div>
+        <h2>Bills Delivered By #{internalCtrlBean.printedBillsList[0].deliveryLogindetailId.person.fullName}</h2>
+        <h:form>
+            <div id="cound_div">Total Records: <h:outputText value="#{internalCtrlBean.recordsCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <h:messages layout="block" infoClass="success" errorClass="error-message" />
+            <p:dataTable var="wdpr" value="#{internalCtrlBean.printedBillsList}" rows="100" paginator="true" selectionMode="single" rowKey="#{wdpr.id}" rowIndexVar="sril"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" 
+                         selection="#{internalCtrlBean.selectedBill}" rowsPerPageTemplate="100,200,300,500" lazy="true">
+                <p:column headerText="#">
+                    #{sril+1}
+                </p:column>
+                <p:column headerText="Property ID" sortBy="#{wdpr.propertyIdn}">
+                    <h:link value="#{wdpr.propertyIdn}" outcome="viewBillDetails.xhtml?billPayId=#{wdpr.id}" title="Click to view details" />
+                </p:column>
+                <p:column headerText="Payer ID" sortBy="#{wdpr.payerId}">
+                    <h:outputText value="#{wdpr.payerId}" title="Click to view details" />
+                </p:column>
+                <p:column headerText="Address">
+                    <h:outputText value="#{wdpr.houseNo}, #{wdpr.streetName} " rendered="#{wdpr.streetName != null}" />
+                </p:column>
+                <p:column headerText="District" sortBy="#{wdpr.districtName}">
+                    <h:outputText value="#{wdpr.districtName}" />
+                </p:column>
+                <ui:fragment rendered="#{request.isUserInRole('APPLICATION ADMINISTRATOR') or request.isUserInRole('HEAD OF OPERATIONS')}">
+                    <p:column headerText="LUC" sortBy="#{wdpr.luc}">
+                        <h:outputText value="#{wdpr.luc}">
+                            <f:convertNumber type="currency" currencySymbol="N"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Amount Due" sortBy="#{wdpr.amountDue}">
+                        <h:outputText value="#{wdpr.amountDue}">
+                            <f:convertNumber type="currency" currencySymbol="N"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Status" sortBy="#{wdpr.paymentStatus}">
+                        <h:outputText value="#{wdpr.paymentStatus}" />
+                    </p:column>
+                    <p:column headerText="Payment" sortBy="#{wdpr.hasMatchPayment}">
+                        <h:outputText value="Yes"  rendered="#{wdpr.hasMatchPayment}" />
+                        <h:outputText value="No"  rendered="#{not wdpr.hasMatchPayment}" />
+                    </p:column>
+                </ui:fragment>
+                <!-- p:column headerText="Officer" sortBy="#{wdpr.deliveryLogindetailId.person.fullName}">
+                    <h:outputText value="#{wdpr.deliveryLogindetailId.person.fullName}" />
+                </p:column -->
+                <p:column headerText="Delivered On" sortBy="#{wdpr.deliveryDate}">
+                    <h:outputText value="#{wdpr.deliveryDate}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Delivered" sortBy="#{wdpr.isDelivered}">
+                    <h:outputText value="Yes"  rendered="#{wdpr.isDelivered}" />
+                    <h:outputText value="No"  rendered="#{not wdpr.isDelivered}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <!-- h:link value="Details" outcome="viewBillDetails.xhtml?billPayId=#{wdpr.id}" title="Click to view details" / -->
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div">Total Records: <h:outputText value="#{internalCtrlBean.recordsCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+        </h:form>
+    </ui:define>
+</ui:composition>

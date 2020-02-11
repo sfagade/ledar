@@ -1,0 +1,221 @@
+form
+{ margin: 5px 0 0 0;}
+
+form p
+{ padding: 0 0 10px 0;}
+
+form span
+{ padding: 5px 0; 
+  *float: left;
+  width: -moz-max-content;
+  width: 170px; 
+  text-align: left;
+}
+
+form .submit input[type=submit]:hover {
+    background:#513B2B;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#0065bb));
+    background-image: -moz-linear-gradient(top, #FFFFFF, #0065bb);
+    color: #000;
+}
+
+form .submit input[type=submit], input[type=button] {
+    background: none repeat scroll 0 0 #0065bb;
+    border: 1px solid #0065bb;
+    color: #fff;
+    cursor: pointer;
+    font: 100% "Yanone Kaffeesatz",sans-serif;
+    margin: 0 0 0 2px;
+    padding: 5px 15px;
+    width: auto;
+}
+
+form .disable input[type=submit], input[type=button] {
+    background: #B5AFAF;
+    background: -webkit-gradient(linear, left top, left bottom, from(#CCC), to(#B5AFAF));
+    background-image: -moz-linear-gradient(top, #CCC, #B5AFAF);
+    border-color: #999;
+}
+form .disable input[type=submit]:hover {
+    background: #B5AFAF;
+}
+
+input[type=submit],div.actions ul li a,td.actions a {
+    border: 0; 
+    width: auto;
+    margin: 0 0 0 200px; 
+    cursor: pointer; 
+    color: #35BDF5;
+    border: 1px solid #ddd;
+    padding: 5px 15px;
+    background: #fff;
+    font: normal 140% 'Yanone Kaffeesatz', sans-serif;}
+
+form textarea, .form_settings select
+{ 
+    font: 100% 'trebuchet ms', arial;
+    border: 1px solid #a9a6a6;
+    padding: 5px 10px;
+    background: #fff;
+    height: 85px;
+    * width: 75%; 
+    overflow: auto;
+    color: #2F2C2C;
+}
+
+* form select
+{ width: 274px;} 
+
+form checkbox
+{ margin: 4px 0; 
+  padding: 0; 
+  width: 14px;
+  border: 0;
+  background: none;
+}
+
+.search
+{ color: #666;
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 10px 5px;
+  width: 189px;
+  color: #F14E23;
+}
+fieldset {
+    border: 1px solid #ccc;
+    margin-bottom: 1em;
+    margin-right: 10px;
+    padding: 16px 20px;
+}
+fieldset legend {
+    * font-size: 16px; 
+    font-weight: bold;
+}
+fieldset fieldset {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    padding: 16px 10px;
+}
+fieldset fieldset legend {
+    font-size: 120%;
+    font-weight: normal;
+}
+fieldset fieldset div {
+    clear: left;
+    margin: 0 20px;
+}
+
+form .input {
+    color: #444;
+}
+
+form .required {
+    font-weight: bold;
+}
+form .required label:after {
+    color: #e32;
+    content: '*';
+    display:inline;
+}
+
+input, textarea {
+    border: 1px solid #A9A6A6;
+    clear: both;
+    font-size: 100%;
+    font-family: "frutiger linotype", "lucida grande", "verdana", sans-serif;
+    padding: 4px;
+    width: 335px;
+}
+
+form div {
+    margin-bottom: 1em;
+    margin-right: 10px;
+    padding: 0.5em;
+    vertical-align: text-top;
+}
+form div.submit {
+    border: 0;
+    clear: both;
+    margin-top: 10px;
+    padding-left: 0.5em;
+}
+label {
+    display: block;
+    font-size: 110%;
+    margin-bottom: 3px;
+    min-width: 145px;
+}
+
+select {
+    clear: both;
+    font-size: 11px;
+    vertical-align: text-bottom;
+}
+select[multiple=multiple] {
+    width: 100%;
+}
+option {
+    font-size: 120%;
+    padding: 0 3px;
+}
+input[type=checkbox] {
+    clear: left;
+    * float: left; 
+    margin: 0px 6px 7px 2px;
+    width: auto;
+}
+div.checkbox label {
+    display: inline;
+}
+input[type=radio] {
+    float:left;
+    width:auto;
+    margin: 0 3px 7px 0;
+}
+div radio label {
+    margin: 0 0 6px 20px;
+}
+
+input[type=submit] {
+    display: inline;
+    font-size: 110%;
+    width: auto;
+}
+input[type=submit],
+div.actions ul li a,
+td.actions a {
+    font-weight:normal;
+    padding: 4px 8px;
+    background:#513B2B;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#0065bb));
+    background-image: -moz-linear-gradient(top, #FFFFFF, #0065bb);
+    color: #0065bb;
+    border:1px solid #0065bb;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    text-decoration:none;
+    text-shadow: 0 0.01em 0 #2e3436;
+    min-width: 0;
+}
+
+input[type=submit]:hover,
+div.actions ul li a:hover,
+td.actions a:hover {
+    background: #0065bb;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f7f7e1), to(#eeeca9));
+    color: #FFF;
+}
+#dash_form {
+    border: 0;
+    width: 100%;
+}
+#updProp table {
+    width: 80%;
+    margin-left: 20px;
+}
+#updProp table tr td {
+    background: none;
+}
+

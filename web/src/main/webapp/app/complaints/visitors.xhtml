@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{complaintsBean.initVistorsView}" />
+        </f:metadata>
+        <div id="breadcrumb">
+            <ul>
+                <li><a href="#" onclick="history.go(-1);">Go Back</a></li>
+                <li><h:link class="item" value="New Visitor" outcome="/app/dataEntry/createNewVisitor.xhtml" title="Click to register new visitor information"/></li>
+            </ul>
+        </div>
+        <h2>All Visitors</h2>
+        <h:form id="vistor">
+            <p:panel id="toggleable" header="Search Visitors" toggleable="true" collapsed="true" closable="false" toggleSpeed="500" closeSpeed="500" widgetVar="panel" style="margin-bottom:20px; width: 50%;">
+                <h:outputLabel for="propId" value="Notice No.:" style="float: none; display: inline;" />
+                <h:inputText id="propId" value="#{complaintsBean.propertyId}" />
+                <br />
+                <div class="input select" style="margin-right: 50px;" id="lcda_div">
+                    <h:outputLabel for="chrmen" value="Local Government Area:" />
+                    <h:selectOneMenu id="chrmen" value="#{complaintsBean.selectedLcda}" converter="#{localCouncelDevConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.lcdArea}" var="lcda" itemLabel="#{lcda.lcdaName}" itemValue="#{lcda}" />
+                        <f:ajax listener="#{complaintsBean.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="warddi_v">
+                    <h:outputLabel for="lcda_ward" value="District:" />
+                    <h:selectOneMenu id="lcda_ward" value="#{complaintsBean.selectedWard}" converter="#{lcdaWardsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.lcdaWards}" var="ward_" itemLabel="#{ward_.wardName}" itemValue="#{ward_}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="addre" value="Address: " />
+                    <h:inputText id="addre" value="#{complaintsBean.propertyAddress}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="vsname" value="Visitor Name: " />
+                    <h:inputText id="vsname" value="#{complaintsBean.visitorName}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="vsphone" value="Visitor Phone Number: " />
+                    <h:inputText id="vsphone" value="#{complaintsBean.visitorPhone}" />
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="cmplt" value="Purpose of Visit:" />
+                    <h:selectOneMenu id="cmplt" value="#{complaintsBean.selectedPurpose}" required="true" converter="#{visitPurposeConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.purposeList}" var="purp" itemLabel="#{purp.purposeName}" itemValue="#{purp}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px;">
+                    <h:outputLabel for="ropr" value="Relationship to Property:" />
+                    <h:selectOneMenu id="ropr" value="#{complaintsBean.selectedRelationship}" required="true" converter="#{relationshipConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.relationshipList}" var="rlsp" itemLabel="#{rlsp.relationshipName}" itemValue="#{rlsp}" />
+                    </h:selectOneMenu>
+                    <h:message id="ropr_" for="cmplt" errorClass="error-message" />
+                </div>
+                <div class="input select" style="margin-right: 50px;" id="rngdiv">
+                    <h:outputLabel for="dtrn" value="Visit Day:" />
+                    <h:selectOneMenu id="dtrn" value="#{complaintsBean.selectedDay}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{ledarAppBean.dateSeacrhValues}"/>
+                    </h:selectOneMenu>
+                </div>
+                <div class="input select" style="margin-right: 50px; display: none;" id="dtediv">
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="dob_" value="Start Date: " />
+                        <p:calendar id="dob_" value="#{complaintsBean.visit_date}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                    <div class="input select" style="margin-right: 50px;">
+                        <h:outputLabel for="endd" value="End Date: " />
+                        <p:calendar id="endd" value="#{complaintsBean.end_date}" pattern="MM/dd/yyyy" yearRange="c-85:c+1" navigator="true">
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                        </p:calendar>
+                    </div>
+                </div>
+                <div class="submit">
+                    <h:commandButton id="saveBtn" value="Search" class="submit"  action="#{complaintsBean.filterVisitorsResult}" />
+                </div>
+                <h:commandLink value="Reset Query" action="#{complaintsBean.resetVisitorsList}" title="Click here to return this page to it's default state"/>
+            </p:panel>
+            <div id="vsodiv" style="display: none;">
+                <div><a href="#" id="clsl">Close</a></div>
+                <div id="midmsg"></div>
+                <div class="input select required" style="margin-right: 50px;" id="wa_rddiv">
+                    <h:outputLabel for="ward_street_" value="Visitor Name: " />
+                    <h:selectOneMenu id="ward_street_" value="#{complaintsBean.currentVisitor}" converter="#{visitorsConverterBean}">
+                        <f:selectItem itemValue="#{null}" itemLabel="(Select One)" />
+                        <f:selectItems value="#{complaintsBean.visitorsList}" var="str_" itemLabel="#{str_.lastName} #{str_.firstName}" itemValue="#{str_}" />
+                        <f:ajax listener="#{complaintsBean.changedLcda}" render="lcda_ward" />
+                    </h:selectOneMenu>               
+                </div>
+                <div>
+                    <input type="button" value="Sign Out" id="sgobtn" />
+                </div>
+            </div>
+            <div id="sngdiv" class="action-link"><a href="#" id="vsolink">Visitor Sign Out</a></div>
+            <div id="cound_div">Total Records: <h:outputText value="#{complaintsBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+            <p:dataTable var="lcda" value="#{complaintsBean.visitorsList}" rows="50" paginator="true" rowIndexVar="sril" selectionMode="multiple" rowKey="#{lcda}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="40,50,70,100,200">
+                <p:column headerText="#">
+                    #{sril+1}
+                </p:column>        
+                <p:column headerText="Property ID" sortBy="#{lcda.propertyNumber}">
+                    <h:outputText value="#{lcda.propertyId}" />
+                </p:column>
+                <p:column headerText="Visitor Name" sortBy="#{lcda.lastName}">
+                    <h:outputText value="#{lcda.lastName}" /> <h:outputText value="&#160;" /> <h:outputText value="#{lcda.firstName}" />
+                </p:column>
+                <p:column headerText="District" sortBy="#{lcda.lcdaWardId.wardName}">
+                    <h:outputText value="#{lcda.lcdaWardId.wardName}" />
+                </p:column>
+                <p:column headerText="Phone Number">
+                    <h:outputText value="#{lcda.propertyNumber}" />
+                </p:column>
+                <p:column headerText="Purpose" sortBy="#{lcda.visitPurposeId.purposeName}">
+                    <h:outputText value="#{lcda.visitPurposeId.purposeName}" />
+                </p:column>
+                <p:column headerText="Time In" sortBy="#{lcda.timeIn}">
+                    <h:outputText value="#{lcda.timeIn}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Time Out" sortBy="#{lcda.timeOut}">
+                    <h:outputText value="#{lcda.timeOut}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Relationship" sortBy="#{lcda.complainerRelationship.relationshipName}">
+                    <h:outputText value="#{lcda.complainerRelationship.relationshipName}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <h:link value="Details" outcome="visitorDetails.xhtml?propId=#{lcda.id}" title="Click to view details" />
+                    <h:outputText value="&#160;" />
+                </p:column>
+            </p:dataTable>
+            <div id="cound_div" style="float: left;">Total Records: <h:outputText value="#{complaintsBean.recordCount}"><f:convertNumber pattern="###,###" /></h:outputText></div>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+            $('#vsolink').click(function (evt) {
+                $('#vsodiv').fadeIn('100');
+                $('#sngdiv').fadeOut('100');
+                evt.preventDefault();
+            });
+            $('#clsl').click(function (evt) {
+                $('#vsodiv').fadeOut('slow');
+                $('#sngdiv').fadeIn('100');
+                evt.preventDefault();
+            });
+
+            $('#sgobtn').click(function (evt) {
+                $.ajax({
+                    type: "GET",
+                    url: "#{request.contextPath}/ajaxSupports?form_action=visitSignOut&fileid=" + $('#vistor\\:ward_street__hinput').val(),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (props) {
+
+                        if (props.hasOwnProperty('sucMessage') && props['sucMessage'] === 'Success') {
+
+                            $('#midmsg').html('Visitor signed out successfully.');
+                            $('#midmsg').removeClass('error-message').addClass('success');
+
+                        } else {
+                            $('#midmsg').html('Could sign out visitor, please try again later.');
+                            $('#midmsg').removeClass('success').addClass('error-message');
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    }
+                });
+                evt.preventDefault();
+            });
+
+            $('#vistor\\:dtrn').change(function () {
+
+                if ($(this).val() === 'SELECT DATE RANGE') {
+                    $('#dtediv').fadeIn(100);
+                    $('#rngdiv').fadeOut(100);
+                }
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

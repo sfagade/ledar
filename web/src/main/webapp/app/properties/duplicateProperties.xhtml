@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+@author sfagade
+@created Sep 27, 2016
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{landPropsBean.initDuplicateProperty}" />
+        </f:metadata>
+        <h3>Duplicate Properties</h3>
+        <h:form id="dupProp">
+            <div id="breadcrumb">
+                <ui:fragment rendered="#{!request.isUserInRole('APPLICATION ADMINISTRATOR')}">
+                    <ul>
+                        <li><h:link value="Go Back" outcome="/app/index.xhtml" title="Click to go back"/></li>
+                    </ul>
+                </ui:fragment>
+            </div>
+            <p:layout style="min-width:400px;height:650px;">
+                <p:layoutUnit position="west" header="Duplicate Pins" resizable="true" size="300" minSize="40" maxSize="550" collapsible="true">
+                    <span style="font-weight: bold; line-height: 16px; padding-left: 6px;">Total Unique Streets Count: #{landPropsBean.recordsCount}</span>
+                    <p:scrollPanel style="width:270px;height:450px" id="irrStr">
+                        <ui:repeat var="bclas" value="#{landPropsBean.duplicateList}">
+                            <div style="border-bottom: 1px solid #000;">
+                                <span><a href="#">#{bclas[0]}</a> #{bclas[3]}</span>
+                            </div>
+                        </ui:repeat>
+                    </p:scrollPanel>
+                </p:layoutUnit>
+                <p:layoutUnit position="center" header="Properties" collapsible="false">
+                    <div id="midmsg"></div>
+                    <div id="propDiv"></div>
+                </p:layoutUnit>
+            </p:layout>
+        </h:form>
+        <script type="text/javascript">
+            /** <![CDATA[ */
+
+            var longDateFormat = 'MMM D, yyyy HH:mm:ss';
+
+            $('#dupProp\\:irrStr a').click(function (evt) {
+
+                $('#propDiv').html('<img src="#{request.contextPath}/resources/img/icons/ajax-loader.gif" alt="Loading" />');
+
+                $.ajax({
+                    type: "GET",
+                    url: "#{request.contextPath}/rest/restSearch/searchPropertyByPropertyId/" + $(this).html() + "/false",
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (props) {
+                        //console.log(props);
+                        if (props !== null && props.length > 0) {
+                            $('#propDiv').html('<div>Total Properties with PIN Number ' + props[0]['propertyPid'] + ': ' + props.length + '</di>');
+                            var html_ = '<table><tr><th>Property PIN</th><th>Address</th><th>LCDA</th><th>INITS Synced</th><th>Captured On</th><th>Captured By</th><th>Entered On</th><th>Action</th></tr>';
+
+                            for (var nxt in props) {
+                                html_ += '<tr><td>' + props[nxt]['propertyPid'] + '</td><td>' + props[nxt]['propertyNumber'] + ', ' + props[nxt]['wardStreetName'] + '</td><td>' +
+                                        props[nxt]['districtName'] + ', ' + props[nxt]['lcdaName'] + '</td><td>' + props[nxt]['isInitsSynced'] + '</td><td>' +
+                                        jQuery.format.date(props[nxt]['dateCaptured'], longDateFormat) + '</td> <td>' + props[nxt]['capturedByName'] + '</td><td>' +
+                                        jQuery.format.date(props[nxt]['dateCreated'], longDateFormat) + ' </td><td>' + '<a href="viewPropertyDetails.xhtml?propId=' + props[nxt]['propId'] + '" id="' +
+                                        props[nxt]['propId'] + '" target="_blank">Details</a> &nbsp;|&nbsp; <a href="#" id="' + props[nxt]['propId'] + '">Delete</a></td></tr>';
+
+                            }
+                            html_ += '</table>';
+                            $(html_).appendTo('#propDiv');
+                        } else {
+                            $('#propDiv').html('No Properties created for this street');
+                        }
+                    },
+                    failure: function (errMsg) {
+                        console.log(errMsg);
+                    }
+                });
+
+                evt.preventDefault();
+            });
+
+            $(document).ready(function () {
+                $("#content").css("height", "800px");
+                //$('#streetWards\\:assBtn').prop('disabled', true);
+            });
+
+            $(document).on('click', "#propDiv a", function (evt) {
+
+                var parentrow = $(this).parent().parent();
+
+                console.log('about to perform: ', $(this).html());
+                if ($(this).html() === 'Delete') { //this should always be the case
+                    $.ajax({
+                        type: "GET",
+                        url: "#{request.contextPath}/ajaxSupports?form_action=deleteProperty&fileid=" + $(this).attr('id'),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (props) {
+
+                            if (props.hasOwnProperty('sucMessage') && props['sucMessage'] === 'Delete successful') {
+                                parentrow.remove();
+                                $('#midmsg').html('Property has been deleted successfully.');
+                                $('#midmsg').removeClass('error-message').addClass('success');
+                            } else {
+                                $('#midmsg').html('Failed to delete property, please try again later.');
+                                $('#midmsg').removeClass('success').addClass('error-message');
+                            }
+                        },
+                        failure: function (errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                } else {
+                    return true;
+                }
+
+                evt.preventDefault();
+            });
+
+            /** ]]> */
+        </script>
+    </ui:define>
+</ui:composition>

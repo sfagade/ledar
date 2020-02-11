@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Document   : podActivities
+    Created on : Feb 22, 2016, 12:28:03 PM
+    Author     : sfagade
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/WEB-INF/templates/default.xhtml">
+    <ui:define name="content">
+        <div id="breadcrumb">
+            <ul>
+                <li><h:link value="Go Back" outcome="/app/index.xhtml" title="Click to go back"/></li>
+            </ul>
+        </div>
+        <h:form id="podRep">
+            <p:dataTable var="propb" value="#{landPropsBean.provDeliveries}" rows="15" paginator="true" rowKey="#{propb.id}" id="checkboxDT" selection="#{landPropsBean.selectedBills}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,35" style="margin-bottom:0">
+
+                <p:column headerText="Property ID" sortBy="#{propb.propertyBillId.tempPropertyId.propertyId}">
+                    <h:link value="#{propb.propertyBillId.tempPropertyId.propertyId}" outcome="/app/internalControl/viewBillDetails.xhtml?propId=#{propb.propertyBillId.id}">
+                    </h:link>
+                </p:column>
+                <p:column headerText="Field Officer" sortBy="#{propb.propertyBillId.deliveryOfficerId.person.fullName}">
+                    <h:outputText value="#{propb.propertyBillId.deliveryOfficerId.person.fullName}" />
+                </p:column>
+                <p:column headerText="District" sortBy="#{propb.propertyBillId.tempPropertyId.wardStreetId.lcdaWardId.wardName}">
+                    <h:outputText value="#{propb.propertyBillId.tempPropertyId.wardStreetId.lcdaWardId.wardName}" />
+                </p:column>
+                
+                <p:column headerText="Status">
+                    <h:outputText value="#{propb.statusPodStatusId.podStatusName}" />
+                </p:column>
+                <p:column headerText="Reason">
+                    <h:outputText value="#{propb.failureDeliveryReasonsId.reasonName}" />
+                </p:column>
+                <p:column headerText="Delivered On">
+                    <h:outputText value="#{propb.timeDelivered}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{propb.created}">
+                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Action">
+                    <h:link value="Details" outcome="/app/internalControl/viewBillDetails.xhtml?propId=#{propb.propertyBillId.id}" title="Click to view details">
+                    </h:link>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
