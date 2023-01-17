@@ -131,7 +131,6 @@
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>3.1.0.redhat-7</version>
             <type>jar</type>
         </dependency>
         <dependency>
